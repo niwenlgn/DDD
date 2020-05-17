@@ -1,0 +1,198 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Data;
+using NPOI.HPSF;
+using NPOI.HSSF.UserModel;
+using NPOI.SS.UserModel;
+using System.IO;
+using System.Web;
+
+namespace MyUtility
+{
+    public static class MyExcel
+    {
+        public static void WriteExcel(DataTable dt, System.Web.HttpResponse context)
+        {
+            if (dt != null && dt.Rows.Count > 0)
+            {
+                NPOI.HSSF.UserModel.HSSFWorkbook book = new NPOI.HSSF.UserModel.HSSFWorkbook();
+                NPOI.SS.UserModel.ISheet sheet = book.CreateSheet(dt.TableName);
+
+                NPOI.SS.UserModel.IRow row = sheet.CreateRow(0);
+                for (int i = 0; i < dt.Columns.Count; i++)
+                {
+                    row.CreateCell(i).SetCellValue(dt.Columns[i].ColumnName);
+                }
+                for (int i = 0; i < dt.Rows.Count; i++)
+                {
+                    NPOI.SS.UserModel.IRow row2 = sheet.CreateRow(i + 1);
+                    for (int j = 0; j < dt.Columns.Count; j++)
+                    {
+                        row2.CreateCell(j).SetCellValue(Convert.ToString(dt.Rows[i][j]));
+                    }
+                }
+
+                using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
+                {
+                    book.Write(ms);
+                    context.AddHeader("Content-Disposition", string.Format("attachment; filename={0}.xls", DateTime.Now.ToString("yyyyMMddHHmmssfff")));
+                    context.BinaryWrite(ms.ToArray());
+                    //using (FileStream fs = new FileStream(@"c:\ts.xls", FileMode.Create, FileAccess.Write))
+                    //{
+                    //    byte[] data = ms.ToArray();
+                    //    fs.Write(data, 0, data.Length);
+                    //    fs.Flush();
+                    //}
+                    book = null;
+                    ms.Close();
+                    ms.Dispose();
+                }
+            }
+        }
+
+        /// <summary>
+        /// 导出到Excel文件
+        /// </summary>
+        /// <param name="dt">表</param>
+        /// <param name="sheetname">文件名</param>
+        /// <param name="dictList">标题头与列宽</param>
+        /// <param name="context">上下文</param>
+        public static void WriteExcel<T>(List<T> ExpList, string sheetname, Dictionary<string, int> dictList, HttpContextBase context)
+        {
+            DataTable dt = ExpList.ToDataTable(rec => new object[] { ExpList });
+            NPOI.HSSF.UserModel.HSSFWorkbook book = new NPOI.HSSF.UserModel.HSSFWorkbook();
+
+            if (ExpList != null && ExpList.Count() > 0)
+            {
+                NPOI.SS.UserModel.ISheet sheet = book.CreateSheet(sheetname);
+
+                NPOI.SS.UserModel.IRow row = sheet.CreateRow(0);
+
+                //标题头与列宽
+                var dtList = dictList.ToList();
+                for (int i = 0; i < dtList.Count; i++)
+                {
+                    sheet.SetColumnWidth(i, dtList[i].Value);
+                    row.CreateCell(i).SetCellValue(dtList[i].Key);
+                }
+
+                for (int i = 0; i < dt.Rows.Count; i++)
+                {
+                    NPOI.SS.UserModel.IRow row2 = sheet.CreateRow(i + 1);
+                    for (int j = 0; j < dt.Columns.Count; j++)
+                    {
+                        row2.CreateCell(j).SetCellValue(Convert.ToString(dt.Rows[i][j]));
+                    }
+                }
+            }
+            using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
+            {
+                book.Write(ms);
+                context.Response.AddHeader("Content-Disposition", string.Format("attachment; filename={0}.xls", sheetname));
+                context.Response.BinaryWrite(ms.ToArray());
+                book = null;
+                ms.Close();
+                ms.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// 导出到Excel文件 根据Dto设置的相关Title属性进行导出
+        /// </summary>
+        /// <param name="dt">表</param>
+        /// <param name="sheetname">文件名</param>
+        /// <param name="context">上下文</param>
+        public static void WriteExcel<T>(List<T> ExpList, string sheetname, HttpContextBase context)
+        {
+            NPOI.HSSF.UserModel.HSSFWorkbook book = new NPOI.HSSF.UserModel.HSSFWorkbook();
+
+            if (ExpList != null && ExpList.Count() > 0)
+            {
+                NPOI.SS.UserModel.ISheet sheet = book.CreateSheet(sheetname);
+
+                NPOI.SS.UserModel.IRow row = sheet.CreateRow(0);
+
+                //取得导出字段标题宽度相关信息
+                List<ExpDto> list = GetExpFields<T>();
+
+                //设置标题与列宽
+                for (int i = 0; i < list.Count; i++)
+                {
+                    sheet.SetColumnWidth(i, list[i].width * 256);//参数的单位是1/256个字符宽度
+                    row.CreateCell(i).SetCellValue(list[i].title);
+                }
+
+                //设置导出数据
+                for (int i = 0; i < ExpList.Count; i++)
+                {
+                    NPOI.SS.UserModel.IRow row2 = sheet.CreateRow(i + 1);
+                    for (int j = 0; j < list.Count; j++)
+                    {
+                        T obj = ExpList[i];
+                        row2.CreateCell(j).SetCellValue(GetValue<T>(ExpList[i], list[j].field));
+                    }
+                }
+            }
+            using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
+            {
+                book.Write(ms);
+                context.Response.AddHeader("Content-Disposition", string.Format("attachment; filename={0}.xls", sheetname));
+                context.Response.BinaryWrite(ms.ToArray());
+                book = null;
+                ms.Close();
+                ms.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// 取得导出Excel相关字段 根据Title特性来判断
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static List<ExpDto> GetExpFields<T>()
+        {
+            List<ExpDto> list = new List<ExpDto>();
+            var fields = typeof(T).GetProperties();//获取所有属性
+            foreach (var item in fields)
+            {
+                var attribute = item.GetCustomAttributes(typeof(TitleAttribute), true);//取得属性上是否存在指定的特性
+                if (attribute.Any())
+                {
+                    ExpDto exp = new ExpDto();
+                    exp.field = item.Name;
+                    exp.title = ((TitleAttribute)attribute[0]).TitleName;
+                    exp.width = ((TitleAttribute)attribute[0]).Width;
+                    list.Add(exp);
+                }
+            }
+            return list;
+        }
+
+        /// <summary>
+        /// 取得指定字段的值
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj">obj</param>
+        /// <param name="key">属性名</param>
+        /// <returns></returns>
+        public static string GetValue<T>(T obj, string key)
+        {
+            var prop = obj.GetType().GetProperty(key);//取得指定属性
+            var type = prop.PropertyType.Name;//取得指定属性的字段类型
+            var value = prop.GetValue(obj);//从对象上取得值
+            return value==null ? null : value.ToString();
+        }
+
+        /// <summary>
+        /// 导出Excel标题设置数据对象
+        /// </summary>
+        public class ExpDto
+        {
+            public string field { get; set; }
+            public string title { get; set; }
+            public int width { get; set; }
+        }
+    }
+}

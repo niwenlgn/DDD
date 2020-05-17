@@ -1,0 +1,103 @@
+﻿
+@{
+    ViewData["Title"] = "个人职责树";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<head>
+    <link href="~/css/gelubotree.css" rel="stylesheet" />
+</head>
+<body>
+    <div id="det">
+        <div class="block">
+            <el-tree :data="data"
+                     :props="defaultProps"
+                     :highlight-current="true"
+                     :expand-on-click-node="false"
+                     node-key="parentid"
+                     :default-expanded-keys="['1']">
+                <div class="custom-tree-node" slot-scope="{ node, data }">
+                    <span>{{ node.label }}</span>
+                    <span class="el-ic">
+                        <i class="el-icon-circle-plus-outline" @@click="add(data)" title="新增"></i>
+                        <i class="el-icon-edit" @@click="update(data)" title="修改"></i>
+                        <i class="el-icon-delete" @@click="remove(data)" title="删除" v-if="data.parentid != null"></i>
+                        <i class="el-icon-top" @@click="sort(data,true)" title="上移"></i>
+                        <i class="el-icon-bottom" @@click="sort(data,false)" title="下移"></i>
+                    </span>
+                </div>
+            </el-tree>
+        </div>
+
+    </div>
+</body>
+<script>
+    var det = new Vue({
+        el: "#det",
+        data: {
+            data: [],
+            defaultProps: {
+                label: "name",
+                children: "children"
+            },
+            url : 'http://www.globletech.net/Test/GetDuties'
+        },
+        mounted: function () {
+            this.loadtree();
+        },
+        methods: {
+            loadtree() {
+                $.post('@Url.Action("GetJsonTree")', { "path": this._data.url }, function (data) {
+                    debugger
+                    det._data.data = data;
+                })
+            },
+            add(data) {
+                window.location = '@Url.Action("CURD")' + "?type=xz&parentid=" + data.id;
+            },
+            update(data) {
+                window.location = '@Url.Action("CURD")' + "?type=xg&id=" + data.id;
+            },
+            sort(data, tag) {
+                var url = "http://www.globletech.net/Test/MoveDuty";
+                var json = { id: data.id, ismoveup: tag };
+                var _this = this;
+                $.ajax({
+                    contentType: 'application/json',
+                    type: 'POST',
+                    url: url,
+                    data: JSON.stringify(json),
+                    beforeSend: function (request) {
+                        request.setRequestHeader("Authorization", '@ViewBag.token');
+                    },
+                    success: function (res) {
+                        if (res.result) {
+                            _this.loadtree();
+                        }
+                    }
+                });
+            },
+            remove(data) {
+                var url = "http://www.globletech.net/Test/RemoveDuty";
+                var json = { id: data.id };
+                var _this = this;
+                $.ajax({
+                    contentType: 'application/json',
+                    type: 'POST',
+                    url: url,
+                    data: JSON.stringify(json),
+                    beforeSend: function (request) {
+                        request.setRequestHeader("Authorization", '@ViewBag.token');
+                    },
+                    success: function (res) {
+                        if (res.result) {
+                            alert("删除成功");
+                            _this.loadtree();
+                        }
+                    }
+                });
+                console.log(data);
+            }
+        }
+    })
+</script>
+

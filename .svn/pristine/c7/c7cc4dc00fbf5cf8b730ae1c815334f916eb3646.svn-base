@@ -1,0 +1,55 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace MyUtility.Cache {
+	public interface ICache {
+		/// <summary>
+		/// 根据Key获取缓存信息
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="Key"></param>
+		/// <returns></returns>
+		T Get<T>(string key);
+		/// <summary>
+		/// 根据Key获取缓存信息 根据func生成值
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="key"></param>
+		/// <param name="func"></param>
+		/// <returns></returns>
+		T Get<T>(string key, Func<T> func);
+		/// <summary>
+		/// 根据Key获取缓存信息 返回object
+		/// </summary>
+		/// <param name="Key"></param>
+		/// <returns></returns>
+		object Get(string key);
+		/// <summary>
+		/// 增加缓存信息
+		/// </summary>
+		/// <param name="key"></param>
+		/// <param name="data"></param>
+		/// <param name="cacheTime"></param>
+		void Add(string key, object data, int cacheTime = 30);
+		/// <summary>
+		/// 判断是否存在此Key的缓存信息
+		/// </summary>
+		/// <param name="key"></param>
+		/// <returns></returns>
+		bool Contains(string key);
+		/// <summary>
+		/// 删除Key的缓存
+		/// </summary>
+		/// <param name="key"></param>
+		void Remove(string key);
+		/// <summary>
+		/// 清楚所有缓存信息
+		/// </summary>
+		void RemoveAll();
+		object this[string key] { get; set; }
+		int Count{get;}
+	}
+}

@@ -1,0 +1,99 @@
+﻿using DDD.Data;
+using DDD.IRepository;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace DDD.Repository
+{
+    public class UnitOfWork: IUnitOfWork
+    {
+        public DbContext _dbcontext;
+        public IDbContextTransaction tra;
+
+        public UnitOfWork(oaEntities dbcontext)
+        {
+            _dbcontext = dbcontext;
+        }
+        /// <summary>
+        /// 修改信息提交
+        /// </summary>
+        /// <param name="validatonSave"></param>
+        /// <returns></returns>
+        public int SaveChanges()
+        {
+            return _dbcontext.SaveChanges();
+        }
+
+        /// <summary>
+        /// 修改信息提交 异步方法
+        /// </summary>
+        /// <param name="validatonSave"></param>
+        /// <returns></returns>
+        public async Task<int> SaveChangesAsync()
+        {
+            return await _dbcontext.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// 开启事务模式
+        /// </summary>
+        public void BeginTransaction()
+        {
+            tra = _dbcontext.Database.BeginTransaction();
+            //throw new NotImplementedException();
+        }
+        /// <summary>
+        /// 修改信息提交
+        /// </summary>
+        /// <param name="validatonSave"></param>
+        /// <returns></returns>
+        public int Commit()
+        {
+            try
+            {
+                tra.Commit();
+                tra.Dispose();
+                return 1;
+            }
+            catch (Exception e)
+            {
+                throw e.InnerException;
+            }
+        }
+        /// <summary>
+        /// 修改信息回滚
+        /// </summary>
+        /// <returns></returns>
+        public int RollBack()
+        {
+            try
+            {
+                tra.Rollback();
+                tra.Dispose();
+                return 1;
+            }
+            catch (Exception e)
+            {
+                throw e.InnerException;
+            }
+        }
+
+        public DbContext GetDbContext()
+        {
+            return _dbcontext;
+        }
+
+        public void Dispose()
+        {
+            if (_dbcontext != null)
+                _dbcontext.Dispose();
+            GC.SuppressFinalize(this);
+        }
+
+        
+    }
+}

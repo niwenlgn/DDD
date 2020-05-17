@@ -1,0 +1,35 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using DDD.DTO;
+using DDD_core.Controllers;
+using DDD.IService;
+
+namespace DDD_core.Areas.Admin.Controllers
+{
+    public class AccountController : BaseController
+    {
+        private Isys_accountService _Account { get; set; }
+
+        public AccountController(Isys_accountService Isys_accountService)
+        {
+            _Account = Isys_accountService;
+        }
+
+        public IActionResult Index()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 获取人员信息
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult GetTableData()
+        {
+            return Json(_Account.GetTableData());
+        }
+    }
+}

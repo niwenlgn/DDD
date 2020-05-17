@@ -1,0 +1,35 @@
+﻿using MyUtility.Cache;
+
+namespace MyUtility.Cache
+{
+    /// <summary>
+    /// Redis 操作类
+    /// </summary>
+    public class RedisHelpper : CacheHelpper
+    {
+        private Redis _Redis { get; set; }
+        public RedisHelpper()
+        {
+            _Redis = new Redis();
+        }
+        public override void DelCache(string key)
+        {
+            _Redis.Remove(key);
+        }
+
+        public override string GetCache(string key)
+        {
+            return _Redis.Get<string>(key);
+        }
+
+        public override string GetUser()
+        {
+            return GetCache("userid");
+        }
+
+        public override void SetCache(string key, string value, int minutes = 30)
+        {
+            _Redis.Set(key, value, minutes);
+        }
+    }
+}

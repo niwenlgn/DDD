@@ -1,0 +1,36 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Net;
+using System.IO;
+
+namespace MyUtility
+{
+    public class MySms
+    {
+        public static void send(string user, string content, string tel="")
+        {
+            string s_flag;
+            Dictionary<string, string> dic1 = new Dictionary<string, string>();
+            dic1.Add("account", user);
+            s_flag = MyUrlOp.Post("http://oa.goodfriend.com.cn:82/msg/wxFans.aspx", dic1);
+            if (s_flag.Substring(0, 2) == "ok")
+            {
+                Dictionary<string, string> dic = new Dictionary<string, string>();
+                dic.Add("content", content);
+                dic.Add("toUser", user);
+                dic.Add("account", "web");
+                dic.Add("password", "smsgoodfriend");
+                dic.Add("sendUser", "sys");
+                MyUrlOp.Post("http://oa.goodfriend.com.cn:82/message.aspx", dic);
+            }
+            else
+            {
+                //sms sms = new sms();
+                //sms.send(tel, "10", content);
+                //sms.release();
+            }
+        }
+       
+    }
+}

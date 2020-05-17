@@ -1,0 +1,16 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace DDD.DTO.gelubo
+{
+    public class GeluboTreeDTO
+    {
+        public int? id { get; set; }
+        public int? parentid { get; set; }
+        public int? index { get; set; }
+        public string role { get; set; }
+        public int? level { get; set; }
+        public string name { get; set; }
+    }
+}

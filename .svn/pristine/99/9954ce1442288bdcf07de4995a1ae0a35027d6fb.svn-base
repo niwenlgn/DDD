@@ -1,0 +1,102 @@
+﻿
+@{
+    ViewData["Title"] = "个人职责树";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<body>
+    <div id="det">
+
+
+        <div class="block">
+            <el-tree :data="data"
+                     :props="defaultProps"
+                     :highlight-current="true"
+                     :load="loadDataTree"
+                     default-expand-all
+                     lazy
+                     :expand-on-click-node="false"
+                     node-key="id"
+                     :default-expanded-keys="['1']"
+                     @@node-click="handleNodeClick">
+                <span class="custom-tree-node" slot-scope="{ node, data }">
+                    <span>{{ node.label }}</span>
+                    <span>
+                        <el-button type="text"
+                                   size="mini"
+                                   icon="el-icon-edit"
+                                   @@click="() => append(data)">
+                            新增
+                        </el-button>
+                        <el-button type="text"
+                                   size="mini"
+                                   icon="el-icon-delete"
+                                   @@click="() => remove(node, data)">
+                            删除
+                        </el-button>
+                    </span>
+                </span>
+            </el-tree>
+        </div>
+
+    </div>
+</body>
+<script>
+    var det = new Vue({
+        el: "#det",
+        data: {
+            data: [],
+            defaultProps: {
+                id: "modeid",
+                label: "name",
+                children: ""
+            }
+        },
+        mounted: function () {
+            //this.GetMenuData();
+        },
+        methods: {
+            loadDataTree(node, resolve) {
+                if (node.level === 0) {
+                    return resolve([{ modeid: "0", name: "主数据", children: "",system: "DDD" }]);
+                }
+                $.post('http://www.globletech.net/Test/GetDuties', {  }, function (data) {
+                    var res = JSON.parse(data);
+                        let rootChildren = [];
+                        if (res.length > 0) {
+                            res.forEach(element => {
+                                rootChildren.push({
+                                    name: element.name,
+                                    modeid: element.id,
+                                    path: element.path,
+                                    system: element.system,
+                                    icon: element.icon,
+                                    sortKey: element.id,
+                                    children: []
+                                });
+                            });
+                    }
+                    if (resolve) {
+                        resolve(rootChildren);//动态加载时
+                    } else {
+                        //更新节点时：
+                        node.childNodes = [];
+                        node.doCreateChildren(rootChildren);
+                    }
+                })
+            },
+            handleNodeClick(data) {
+                console.log(data);
+            },
+            append(data) {
+                console('新增');
+                console.log(data);
+            },
+            remove(node, data) {
+                console.log('删除');
+                console.log(data);
+            }
+        }
+    })
+</script>
+

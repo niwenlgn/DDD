@@ -1,0 +1,34 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using DDD_core.Controllers;
+using DDD.IService;
+using DDD.DTO;
+
+namespace DDD_core.Areas.Admin.Controllers
+{
+    public class MenuController : BaseController
+    {
+
+        private Isys_menuService _MenuService { get; set; }
+
+        public MenuController(Isys_menuService Isys_menuService)
+        {
+            _MenuService = Isys_menuService;
+        }
+
+        public IActionResult Index()
+        {
+            return View();
+        }
+
+
+        public IActionResult GetMenuData(MenuDTO dto)
+        {
+            return Json(_MenuService.GetSysMenu(dto));
+        }
+
+    }
+}

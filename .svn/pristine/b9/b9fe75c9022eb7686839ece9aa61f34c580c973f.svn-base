@@ -1,0 +1,50 @@
+﻿using MyUtility.Json.ElementTree;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Text;
+
+namespace MyUtility.Json
+{
+    public class MyElementTree
+    {
+        //public List<TreeModel> GetTreeList(int ParentID)
+        //{
+        //    List<TreeModel> TreeList = new List<TreeModel>();
+        //    List<MenuModel> ModelList = GetChildMenuList(ParentID);
+        //    foreach (var item in ModelList)
+        //    {
+        //        TreeModel m = new TreeModel();
+        //        m.id = item.ID.ToString();
+        //        m.text = item.MenuName.ToString();
+        //        m.children = GetTreeList(item.ID);
+        //        TreeList.Add(m);
+        //    }
+        //    return TreeList;
+        //}
+        ///// <summary>
+        ///// 获取所有菜单数据
+        ///// </summary>
+        ///// <returns></returns>
+        //public List<MenuModel> GetAllMenuList()
+        //{
+        //    List<MenuModel> list = new List<MenuModel>();
+        //    list.Add(new MenuModel { ID = 1, MenuName = "菜单1", ParentID = 0 });
+        //    list.Add(new MenuModel { ID = 2, MenuName = "菜单1.1", ParentID = 1 });
+        //    list.Add(new MenuModel { ID = 3, MenuName = "菜单1.1.1", ParentID = 2 });
+        //    list.Add(new MenuModel { ID = 4, MenuName = "菜单2", ParentID = 0 });
+        //    return list;
+        //}
+        ///// <summary>
+        ///// 根据父节点获取子节点
+        ///// </summary>
+        ///// <param name="ParentID"></param>
+        ///// <returns></returns>
+        //public List<MenuModel> GetChildMenuList(int ParentID)
+        //{
+        //    List<MenuModel> list = GetAllMenuList();
+        //    var result = list.Where(x => x.ParentID == ParentID);
+        //    return result.ToList();
+        //}
+    }
+}

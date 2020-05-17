@@ -1,0 +1,40 @@
+﻿using DDD_core.Controllers;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace DDD_core.CacheHelpper
+{
+    public class MyCookieHelpper : CacheHelpper
+    {
+        public override void SetCache(string key, string value, int minutes = 30)
+        {
+            _HttpContext.Response.Cookies.Append(key, value, new CookieOptions
+            {
+                Expires = DateTime.Now.AddMinutes(minutes)
+            });
+            _HttpContext.Response.Cookies.Append(key, value);
+        }
+
+        public override string GetCache(string key)
+        {
+            _HttpContext.Request.Cookies.TryGetValue(key, out string value);
+            if (string.IsNullOrEmpty(value))
+                value = string.Empty;
+            return value;
+        }
+
+        public override void DelCache(string key)
+        {
+            _HttpContext.Response.Cookies.Delete(key);
+        }
+
+        public override string GetUser()
+        {
+            return GetCache("userid");
+        }
+    }
+}

@@ -1,0 +1,70 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Runtime.Caching;
+
+namespace MyUtility.Cache {
+	public class MemoryCacheHelper:ICache {
+		protected ObjectCache Cache = MemoryCache.Default;
+
+		public T Get<T>(string key) {
+			if (Cache.Contains(key)) {
+				return (T)Cache[key];
+			}
+			else {
+				return default(T);
+			}
+		}
+
+		public T Get<T>(string key, Func<T> func) {
+			throw new NotImplementedException();
+		}
+
+		public object Get(string key) {
+			if (Cache.Contains(key)) {
+				return Cache[key];
+			}
+			else {
+				return default(object);
+			}
+		}
+
+		public void Add(string key, object data, int cacheTime = 30) {
+			if (data == null) {
+				return;
+			}
+			var policy = new CacheItemPolicy();
+			policy.AbsoluteExpiration = DateTime.Now + TimeSpan.FromHours(cacheTime);
+			Cache.Add(new CacheItem(key, data), policy);
+		}
+
+		public bool Contains(string key) {
+			return Cache.Contains(key);
+		}
+
+		public void Remove(string key) {
+			Cache.Remove(key);
+		}
+
+		public void RemoveAll() {
+			foreach (var item in Cache.Select(b=>b.Key)) {
+				Cache.Remove(item);
+			}
+		}
+
+		public object this[string key] {
+			get {
+				return Cache.Get(key);
+			}
+			set {
+				Add(key, value);
+			}
+		}
+
+		public int Count {
+			get { return (int)Cache.GetCount(); }
+		}
+	}
+}

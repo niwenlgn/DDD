@@ -1,0 +1,56 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<body>
+    <dic id="det">
+
+        <el-table :data="tableData"
+                  style="width: 100%">
+            <el-table-column prop="account"
+                             label="账号"
+                             width="180">
+            </el-table-column>
+            <el-table-column prop="name"
+                             label="姓名"
+                             width="180">
+            </el-table-column>
+            <el-table-column prop="email"
+                             label="email">
+            </el-table-column>
+        </el-table>
+
+    </dic>
+</body>
+
+<script>
+
+    var det = new Vue({
+        el: "#det",
+        data: {
+            tableData:[]
+        },
+        mounted: function () {
+            this.GetTableData();
+        },
+        methods: {
+            GetTableData: function () {
+                var _this = this
+                $.post('@Url.Action("GetTableData")', {}, function (res) {
+
+                    if (res.success) {
+                        _this.tableData = JSON.parse(res.message);
+                    }
+                })
+                
+            }
+
+        },
+        created: function () {
+
+        }
+    })
+
+</script>

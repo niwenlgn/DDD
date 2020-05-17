@@ -1,0 +1,34 @@
+/*
+ * 说明：此文件来源于模板自动生成，有些可能需人工修改
+ *       如果重新生成可能会覆盖此文件需要注意 
+ *       有自定义的方法需加入请使用分布类partial来实现
+ * 描述:实体类 对应的实体为:sys_button
+ * Author:Ysy
+ * Date:2020/3/19
+ * Source:T4模板
+ * Copyright：Ysy
+ */
+
+using DDD.Entities;
+using DDD.IRepository;
+using DDD.DTO;
+using Microsoft.EntityFrameworkCore;
+
+namespace DDD.Repository
+{
+	
+	public class sys_buttonRepository : BaseRepository<sys_button>,Isys_buttonRepository
+    {
+        private DbContext _dbcontext;
+        private DbSet<sys_button> _sys_button;
+        public sys_buttonRepository(IUnitOfWork uow)
+         : base(uow)
+        {
+            _dbcontext = (uow as UnitOfWork)._dbcontext;
+            _sys_button = _dbcontext.Set<sys_button>();
+        }
+    }
+
+}
+	
+

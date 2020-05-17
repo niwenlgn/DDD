@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DDD.DTO\DDD.DTO.csproj" />
+    <ProjectReference Include="..\DDD.Entities\DDD.Entities.csproj" />
+    <ProjectReference Include="..\MyUtility\MyUtility.csproj" />
+  </ItemGroup>
+
+</Project>

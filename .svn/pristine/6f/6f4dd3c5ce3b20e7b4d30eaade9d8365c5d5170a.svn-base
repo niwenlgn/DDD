@@ -1,0 +1,70 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace MyUtility.Extend {
+	public static class DateTimeExtend {
+		public static string ToStr(this DateTime dt,DtType type){
+			string sDt="";
+			switch (type){
+				case DtType.YYYYMMDD_A:
+					sDt = dt.ToString("yyyy-MM-dd");
+					break;
+				case DtType.HHMM:
+					sDt = dt.ToString("HH:mm");
+					break;
+				default:
+					sDt="";
+				break;
+			}
+			return sDt;
+		}
+
+		public static string ToStr(this DateTime? dt, DtType type) {
+			string sDt = "";
+			if (dt != null) {
+				DateTime newDt = DateTime.Parse(dt.ToString());
+				switch (type) {
+					case DtType.YYYYMMDD_A:
+						sDt = newDt.ToString("yyyy-MM-dd");
+						break;
+					case DtType.HHMM:
+						sDt = newDt.ToString("HH:mm");
+						break;
+					default:
+						sDt = "";
+						break;
+				}
+			}
+			else {
+				sDt = "";
+			}
+			return sDt;
+		}
+	}
+
+	public enum DtType {
+		/// <summary>
+		/// 格式YYYY-MM-DD
+		/// </summary>
+		YYYYMMDD_A = 0,
+		/// <summary>
+		/// 格式YYYY/MM/DD
+		/// </summary>
+		YYYYMMDD_B = 1,
+		/// <summary>
+		/// 格式YYYY-MM-DD HH:MM
+		/// </summary>
+		YYYYMMDDHHMM_A = 2,
+		/// <summary>
+		/// 格式YYYY/MM/DD HH:MM
+		/// </summary>
+		YYYYMMDDHHMM_B = 3,
+		/// <summary>
+		/// 格式HH:MM
+		/// </summary>
+		HHMM=4
+	}
+}

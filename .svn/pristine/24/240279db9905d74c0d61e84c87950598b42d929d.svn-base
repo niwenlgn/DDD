@@ -1,0 +1,40 @@
+﻿/*
+ 枚举类型扩展类
+ */
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Reflection;
+using MyUtility.AttributeExtend;
+
+namespace MyUtility.Extend 
+{
+    public static class EumExtend
+    {
+        /// <summary>
+        /// 取得枚举值 特性EnumValue里name属性
+        /// </summary>
+        /// <param name="obj">传入的枚举</param>
+        /// <returns>特性值</returns>
+        public static string GetEnumValue(this object obj)
+        {
+            Type type = obj.GetType();
+            FieldInfo[] fieldInfos = type.GetFields();
+            foreach (var item in fieldInfos)
+            {
+                if (obj.ToString() == item.Name)
+                {
+                    if (item.IsDefined(typeof(EnumValueAttribute), true))
+                    {
+                        var EnumValueAtt = item.GetCustomAttribute(typeof(EnumValueAttribute), true);
+                        string value = ((EnumValueAttribute)EnumValueAtt)._value;
+                        return value;
+                    }
+                }
+            }
+            return null;
+        }
+    }
+}

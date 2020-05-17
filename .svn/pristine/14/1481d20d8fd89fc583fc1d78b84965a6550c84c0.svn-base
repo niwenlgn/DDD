@@ -1,0 +1,30 @@
+﻿
+@{
+    ViewData["Title"] = "杨思远的Blog";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<head>
+    <link href="~/css/BaseIndex.css" rel="stylesheet" />
+</head>
+<body>
+    <div id="bd" style="width:100%;height:100%;margin:0;padding:0;">
+        <div class="headtext">
+            <h1>{{title}}</h1>
+            <h2 style="text-align:right">日期：{{date}}</h2>
+        </div>
+    </div>
+
+</body>
+<script>
+    var app = new Vue({
+        el: "#bd",
+        data: {
+            title: '杨思远的个人博客',
+            date: new Date(+new Date() + 8 * 3600 * 1000).toISOString().replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '')
+        },
+        methods: {
+
+        }
+    })
+</script>

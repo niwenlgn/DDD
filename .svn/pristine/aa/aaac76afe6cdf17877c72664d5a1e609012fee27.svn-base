@@ -1,0 +1,33 @@
+﻿using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace MyUtility.Cache
+{
+    public class SessionHelpper: CacheHelpper
+    {
+        public override void DelCache(string key)
+        {
+            _HttpContext.Session.Remove(key);
+        }
+
+        public override string GetCache(string key)
+        {
+            var value = _HttpContext.Session.GetString(key);
+            if (string.IsNullOrEmpty(value))
+                value = string.Empty;
+            return value;
+        }
+
+        public override string GetUser()
+        {
+            return GetCache("userid");
+        }
+
+        public override void SetCache(string key, string value, int minutes = 30)
+        {
+            _HttpContext.Session.SetString(key, value);
+        }
+    }
+}

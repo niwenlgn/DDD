@@ -1,0 +1,49 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using DDD_core.Models;
+using DDD.DTO;
+using DDD.IService;
+using DDD_core.Filters;
+using MyUtility.Attribute;
+using MyUtility;
+
+namespace DDD_core.Controllers
+{
+    public class HomeController : BaseController
+    {
+        public ISysService _sys { get; set; }
+        
+        public HomeController(ISysService ISysService)
+        {
+            _sys = ISysService;
+        }
+
+        [CheckAttribute(Pattern.不用验证)]
+        public IActionResult Index()
+        {
+            var menu = _sys.GetSysMenu("7659");
+            ViewData["jsonmenu"] = menu.Success ? menu.Message : "";
+            ViewData["system_name"] = "干啥啥不行,吃啥啥没够";
+            ViewData["username"] = "Text";
+            return View();
+        }
+
+
+
+        public IActionResult Login(sys_accountDTO dto)
+        {
+            return View();
+        }
+
+        public IActionResult RunLogin(sys_accountDTO dto)
+        {
+            var res = _sys.VerifyPassword(dto);
+            return Json(res);
+        }
+
+    }
+}

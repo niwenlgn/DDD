@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Autofac.Extras.DynamicProxy" Version="5.0.0" />
+    <PackageReference Include="AutoMapper" Version="8.1.1" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="6.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DDD.DTO\DDD.DTO.csproj" />
+    <ProjectReference Include="..\DDD.Entities\DDD.Entities.csproj" />
+    <ProjectReference Include="..\DDD.IRepository\DDD.IRepository.csproj" />
+    <ProjectReference Include="..\DDD.IService\DDD.IService.csproj" />
+    <ProjectReference Include="..\MyUtility\MyUtility.csproj" />
+  </ItemGroup>
+
+</Project>

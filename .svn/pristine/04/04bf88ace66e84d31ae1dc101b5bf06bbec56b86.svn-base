@@ -1,0 +1,8 @@
+﻿using System;
+
+namespace DDD.IService
+{
+    public class Class1
+    {
+    }
+}

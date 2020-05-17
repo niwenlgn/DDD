@@ -1,0 +1,24 @@
+﻿using Castle.DynamicProxy;
+using MyUtility.Interface;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace DDD.Service.AOP
+{
+    public class CacheAOP : IDependency, IInterceptor
+    {
+        /// <summary>
+        /// 拦截器，将菜单等信息写入缓存
+        /// </summary>
+        /// <param name="invocation"></param>
+        public void Intercept(IInvocation invocation)
+        {
+            var methodsname = invocation.GetConcreteMethod().Name;
+            Console.WriteLine(methodsname + " is run!");
+            invocation.Proceed();
+            var returnvalue = invocation.ReturnValue.ToString();
+            Console.WriteLine("返回值为:{0}", returnvalue);
+        }
+    }
+}

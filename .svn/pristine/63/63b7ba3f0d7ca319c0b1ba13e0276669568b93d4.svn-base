@@ -1,0 +1,45 @@
+/*
+ * 说明：此文件来源于模板自动生成，有些可能需人工修改
+ *       如果重新生成可能会覆盖此文件需要注意 
+ *       有自定义的方法需加入请使用分布类partial来实现
+ * 描述:实体类 对应的实体为:sys_dep
+ * Author:Sammy
+ * Date:2020/3/5
+ * Source:T4模板
+ * Copyright：Sammy@飞翔
+ */
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;  
+
+namespace DDD.Entities {
+	[Table("sys_dep")]
+	public class sys_dep {
+        [Key]
+        public string depid{ get; set; }
+        public string depname{ get; set; }
+        public string updepid{ get; set; }
+        public string manager{ get; set; }
+        public string assistant{ get; set; }
+        public string add_hrdepid{ get; set; }
+        public string istop{ get; set; }
+        public string deppy{ get; set; }
+        public string shortname{ get; set; }
+        public string depgroup{ get; set; }
+        public bool? grouptag{ get; set; }
+        public string depsort{ get; set; }
+        public decimal? id{ get; set; }
+        public string departmentlevel{ get; set; }
+        public bool? limitdep{ get; set; }
+        public bool? sealtag{ get; set; }
+        public bool? closetag{ get; set; }
+        public string closeuser{ get; set; }
+        public DateTime? closedate{ get; set; }
+        public string erp_dep{ get; set; }
+        public string erp_depname{ get; set; }
+ }
+}

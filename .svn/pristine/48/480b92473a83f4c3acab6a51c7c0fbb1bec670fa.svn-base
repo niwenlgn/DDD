@@ -1,0 +1,67 @@
+﻿using MyRedisSession;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.SessionState;
+
+namespace MyUtility {
+	public class SysInfo
+    {
+        public static string url = "";
+        public static string sysid = "MyMis";
+        public static string token = "";
+        public static string title = "";
+        public static string logintype = "local";
+        public static string localurl = "";
+		//微信企业号认证
+		public static readonly string Token = "mDhsuc";//与企业微信账号后台的Token设置保持一致，区分大小写。接收小心设置API接收处设置
+		public static readonly string EncodingAESKey = "aLV8H528wZ9hvjKyYkvpcgefUFpq5JYQG556wqpt49b";//与微信企业账号后台的EncodingAESKey设置保持一致，区分大小写。
+		public static readonly string CorpId = "ww61f0524b643ecd02";//与微信企业账号后台的EncodingAESKey设置保持一致，区分大小写。
+		public static readonly string app_secret = "bjBkgtvQTjA1l-_iLPIbkTogGrBy4OfAmhEKEBQ1P0k";
+		public static readonly string agentId = "1000013";
+
+        public static string GetSysId() {
+            string sysid = ReadInfo("sysid");
+            return sysid;
+        }
+
+        /// <summary>
+        /// 写入暂存信息 根据配置暂存在cookie,session,redis中
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        public static void WriteInfo(string key,string value) {
+            string StorageModel = Configs.GetConfigValue("StorageModel");//存储用户模式
+            if (StorageModel == "Cookie") {
+                MyCookie.SetCookie(key, value);
+            }
+            else if (StorageModel == "Session") {
+                SessionHelper.WriteSession(key, value);
+            }
+            else {
+                MySession.Session[key] = value;
+            }
+        }
+
+        /// <summary>
+        /// 读取暂存信息 根据配置暂存在cookie,session,redis中
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static string ReadInfo(string key) {
+            string StorageModel = Configs.GetConfigValue("StorageModel");//存储用户模式
+            if (StorageModel == "Cookie") {
+                return MyCookie.GetCookieValue(key).ToString();
+            }
+            else if (StorageModel == "Session") {
+                return SessionHelper.GetSession(key) == null ? null : SessionHelper.GetSession(key).ToString();
+            }
+            else {
+                return MySession.Session[key] == null ? null : MySession.Session[key].ToString();
+            }
+        }
+    }
+}

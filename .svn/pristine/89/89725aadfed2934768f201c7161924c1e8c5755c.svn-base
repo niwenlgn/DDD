@@ -1,0 +1,17 @@
+﻿using DDD.DTO;
+using MyUtility.Interface;
+using System.Threading.Tasks;
+
+namespace DDD.IService
+{
+    /// <summary>
+    /// 获取系统菜单
+    /// </summary>
+    public interface Isys_menuService : IDependency
+    {
+        ResponseMessageDTO GetSysMenu(string user);
+        ResponseMessageDTO GetSysMenu(MenuDTO dto);
+
+        ResponseMessageDTO VerifyPassword(sys_accountDTO dto);
+    }
+}

@@ -1,0 +1,100 @@
+﻿
+@{
+    ViewData["Title"] = "格鲁伯考核页面";
+    Layout = null;
+}
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="~/css/gelubo.css" rel="stylesheet" />
+    <script src="~/js/jquery-easyui-1.4.5/jquery-1.8.0.min.js"></script>
+</head>
+
+
+
+<body>
+    <div id="gelubo">
+        <div class="container">
+            <div class="login-box">
+                <div class="title">登录</div>
+                <div class="input">
+                    <input type="text"  id="login-user" placeholder="请输入你注册时的手机号码">
+                </div>
+                <div class="input">
+                    <input type="password"  id="login-password" placeholder="请输入你的密码">
+                </div>
+                <div class="btn login-btn" onclick="Login">
+                    <span>登录</span>
+                </div>
+                <div class="change-box login-change">
+                    <div class="change-btn toSign">
+                        <span>注册</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sign-box">
+                <div class="title">注册</div>
+                <div class="input">
+                    <input type="text" id="sign-user" placeholder="请输入你的电话号码">
+                </div>
+                <div class="input">
+                    <input type="password"  id="sign-password" placeholder="请输入你的密码">
+                </div>
+                <div class="btn sign-btn" onclick="Sign">
+                    <span>注册</span>
+                </div>
+                <div class="change-box sign-change">
+                    <div class="change-btn toLogin">
+                        <span>去登陆</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="~/js/gelubo.js"></script>
+</body>
+
+
+<script>
+
+    // 登录注册页切换
+    (() => {
+        // 登录 -> 注册
+        let toSignBtn = getSelector(".toSign"), toLoginBtn = getSelector(".toLogin"),
+            SignBtn = getSelector(".sign-btn"), LoginBtn = getSelector(".login-btn") ;
+        loginBox = getSelector(".login-box"),
+            signBox = getSelector(".sign-box");
+        toSignBtn.onclick = () => {
+            loginBox.className += ' animate_login';
+            signBox.className += ' animate_sign';
+        };
+        SignBtn.onclick = () => {
+            var phone = $("#sign-user").val();
+            var password = $("#sign-password").val();
+            var url = "http://www.globletech.net/Test/Register";
+            $.post(url, { phonenumber: phone, pwd: password }, function (res) {
+                alert(res);
+                SetCache(phone);
+            })
+        }
+        LoginBtn.onclick = () => {
+            var phone = $("#login-user").val();
+            var password = $("#login-password").val();
+            var url = "http://www.globletech.net/Test/Login";
+            $.post(url, { phonenumber: phone, pwd: password}, function (res) {
+                alert(res);
+                SetCache(phone);
+            })
+        }
+        toLoginBtn.onclick = () => {
+            loginBox.classList.remove("animate_login");
+            signBox.classList.remove("animate_sign");
+        };
+    })(window, document);
+
+    //设置缓存
+    function SetCache(phonenumber) {
+        $.post('@Url.Action("SetTokenAsync")', { account: phonenumber });
+    }
+</script>

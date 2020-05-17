@@ -1,0 +1,54 @@
+﻿/**********************************************************************
+ * 文件名：        MySys.cs
+ * 描述：          系统相关操作
+ * 作者:           Sammy
+ * 日期:           2016-09-25
+ * 说明：          取得IP
+**********************************************************************/
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+
+namespace MyUtility
+{
+    public class NetHelper {
+        public NetHelper()
+        {
+            //
+            // TODO: 在此处添加构造函数逻辑
+            //
+        }
+
+        public static string GetIp()
+        {
+            string loginip = "";
+            //Request.ServerVariables[""]--获取服务变量集合   
+            if (System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"] != null) //判断发出请求的远程主机的ip地址是否为空  
+            {
+                //获取发出请求的远程主机的Ip地址  
+                loginip = System.Web.HttpContext.Current.Request.ServerVariables["REMOTE_ADDR"].ToString();
+            }
+            //判断登记用户是否使用设置代理  
+            else if (System.Web.HttpContext.Current.Request.ServerVariables["HTTP_VIA"] != null)
+            {
+                if (System.Web.HttpContext.Current.Request.ServerVariables["HTTP_X_FORWARDED_FOR"] != null)
+                {
+                    //获取代理的服务器Ip地址  
+                    loginip = System.Web.HttpContext.Current.Request.ServerVariables["HTTP_X_FORWARDED_FOR"].ToString();
+                }
+                else
+                {
+                    //获取客户端IP  
+                    loginip = System.Web.HttpContext.Current.Request.UserHostAddress;
+                }
+            }
+            else
+            {
+                //获取客户端IP  
+                loginip = System.Web.HttpContext.Current.Request.UserHostAddress;
+            }
+            return loginip;
+        }
+    }
+}

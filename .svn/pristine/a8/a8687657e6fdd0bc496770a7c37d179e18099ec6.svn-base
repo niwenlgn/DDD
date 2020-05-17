@@ -1,0 +1,53 @@
+﻿/**********************************************************************
+ * 文件名：        LogHelper.cs
+ * 描述：          Log4net日志记录操作类
+ * 作者:           Sammy
+ * 日期:           2017-06-22
+ * 说明：          配置文件存在于Log4net.config 通过此类的操作记录日志 生成在目录log文件夹
+**********************************************************************/
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using log4net;
+
+//[assembly: log4net.Config.XmlConfigurator(ConfigFile = "Config/Log4net.config", Watch = true)]
+namespace MyUtility
+{
+    /// <summary>
+    /// LogHelper 的摘要说明
+    /// </summary>
+    public class LogHelper
+    {
+        /// <summary>
+        /// 输出日志到Log4Net
+        /// </summary>
+        /// <param name="t"></param>
+        /// <param name="ex"></param>
+        #region static void WriteErrorLog(Type t, Exception ex)
+
+        public static void WriteErrorLog(Type t, Exception ex)
+        {
+            ILog log = LogManager.GetLogger(t);
+            log.Error("Error", ex);
+        }
+
+        #endregion
+
+        /// <summary>
+        /// 输出日志到Log4Net
+        /// </summary>
+        /// <param name="t"></param>
+        /// <param name="msg"></param>
+        #region static void WriteInfoLog(Type t, string msg)
+
+        public static void WriteInfoLog(Type t, string msg)
+        {
+            ILog log = LogManager.GetLogger(t);
+            log.Info(msg);
+        }
+
+        #endregion
+    }
+}

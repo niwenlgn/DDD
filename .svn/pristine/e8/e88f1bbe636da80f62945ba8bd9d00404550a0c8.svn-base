@@ -1,0 +1,158 @@
+﻿
+@{
+    ViewData["Title"] = "个人职责树";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<body>
+    <div id="det">
+        <div class="block">
+            <el-tree :data="data"
+                     :props="defaultProps"
+                     :highlight-current="true"
+                     :load="loadDataTree"
+                     lazy
+                     :expand-on-click-node="false"
+                     node-key="parentid"
+                     :default-expanded-keys="['1']">
+                <span class="custom-tree-node" slot-scope="{ node, data }">
+                    <span>{{ node.label }}</span>
+                    <span>
+                        <el-button type="text"
+                                   size="mini"
+                                   icon="el-icon-circle-plus"
+                                   @@click="() => add(data)"
+                                   round>
+                            新增
+                        </el-button>
+                        <el-button type="text"
+                                   size="mini"
+                                   icon="el-icon-edit"
+                                   @@click="() => update(data)"
+                                   round>
+                            修改
+                        </el-button>
+                        <el-button type="text"
+                                   size="mini"
+                                   icon="el-icon-sort"
+                                   @@click="() => sort(data)"
+                                   round>
+                            移动
+                        </el-button>
+                        <el-button type="text"
+                                   size="mini"
+                                   icon="el-icon-delete"
+                                   @@click="() => remove(node, data)"
+                                   round>
+                            删除
+                        </el-button>
+                    </span>
+                </span>
+            </el-tree>
+        </div>
+
+    </div>
+</body>
+<script>
+    var det = new Vue({
+        el: "#det",
+        data: {
+            data: [],
+            defaultProps: {
+                label: "name",
+                children: "children"
+            }
+        },
+        mounted: function () {
+            //this.GetMenuData();
+        },
+        methods: {
+            loadDataTree(node, resolve) {
+                var url = 'http://www.globletech.net/Test/GetDuties';
+                
+                if (node.level == 0) {
+                    $.post('@Url.Action("GetJsonTree")', { "path": url }, function (data) {
+                        debugger
+                        return resolve(data);
+                })
+                }
+                else {
+                    var json = { name: "", parentid: "", role: "" };
+                    return resolve([]);
+                }
+            },
+            add(data) {
+                debugger
+                var url = "http://www.globletech.net/Test/AddDuty";
+                var json = { name: "测试", parentid: data.id, role: "测试" };
+                $.ajax({
+                    contentType: 'application/json',
+                    type: 'POST',
+                    data: JSON.stringify(json),
+                    url: url,
+                    beforeSend: function (request) {
+                        request.setRequestHeader("Authorization", '@ViewBag.token');
+                    },
+                    success: function (res) {
+                        debugger
+                        alert(res);
+                    }
+                });
+                console.log(data);
+            },
+            update(data) {
+                var url = "http://www.globletech.net/Test/EditDuty";
+                var json = { name: "", parentid: "", role: "" };
+                $.ajax({
+                    contentType: 'application/json',
+                    type: 'POST',
+                    url: url,
+                    data: JSON.stringify(json),
+                    beforeSend: function (request) {
+                        request.setRequestHeader("Authorization", '@ViewBag.token');
+                    },
+                    success: function (res) {
+
+                    }
+                });
+                console.log(data);
+            },
+            sort(data) {
+                var url = "http://www.globletech.net/Test/MoveDuty";
+                var json = { name: "", parentid: "", role: "" };
+                $.ajax({
+                    contentType: 'application/json',
+                    type: 'POST',
+                    url: url,
+                    data: JSON.stringify(json),
+                    beforeSend: function (request) {
+                        request.setRequestHeader("Authorization", '@ViewBag.token');
+                    },
+                    success: function (res) {
+
+                    }
+                });
+                console.log(data);
+            },
+            remove(node, data) {
+                var url = "http://www.globletech.net/Test/RemoveDuty";
+                var json = { name: "", parentid: "", role: "" };
+
+                $.ajax({
+                    contentType: 'application/json',
+                    type: 'POST',
+                    url: url,
+                    data: JSON.stringify(json),
+                    beforeSend: function (request) {
+                        request.setRequestHeader("Authorization", '@ViewBag.token');
+                    },
+                    success: function (res) {
+
+                    }
+                });
+                console.log(data);
+            }
+        }
+    })
+</script>
+

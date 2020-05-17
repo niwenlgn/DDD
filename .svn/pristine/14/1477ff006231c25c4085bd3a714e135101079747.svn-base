@@ -1,0 +1,28 @@
+﻿using Microsoft.Extensions.Configuration;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+
+namespace MyUtility.Config
+{
+    public class Configs
+    {
+        private string conn { get; set; }
+        public Configs()
+        {
+            conn = "appsettings.json";
+        }
+        public Configs(string conn)
+        {
+            this.conn = conn;
+        }
+        public string GetConfigValue(string Key)
+        {
+            var builder = new ConfigurationBuilder();
+            builder.SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile(conn);
+            var config = builder.Build();
+            return config[Key];
+        }
+    }
+}

@@ -1,0 +1,12 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using DDD.Entities;
+using MyUtility.Interface;
+
+namespace DDD.IRepository.system
+{
+    public interface ISys_accountRepository : IBaseRepository<sys_account>, IDependency
+    {
+    }
+}

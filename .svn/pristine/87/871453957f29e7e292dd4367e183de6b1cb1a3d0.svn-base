@@ -1,0 +1,189 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Net;
+using System.IO;
+using Newtonsoft.Json;
+
+namespace MyUtility {
+	public class MyHttpRequest {
+		/// <summary>
+		/// 指定Post地址使用Get 方式获取全部字符串
+		/// </summary>
+		/// <param name="url">请求后台地址</param>
+		/// <param name="dic">参数</param>
+		/// <returns></returns>
+		public static string Post(string url, Dictionary<string, string> dic,Dictionary<string,string> tokenDic=null) {
+			string result = "";
+			HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
+			req.Method = "Post";
+			req.ContentType = "application/x-www-form-urlencoded";
+			//foreach (var item in tokenDic) {//head中加入相关信息
+			//	req.Headers.Add(item.Key, item.Value);
+			//}
+			#region 添加Post 参数
+			StringBuilder builder = new StringBuilder();
+			int i = 0;
+			foreach (var item in dic) {
+				if (i > 0)
+					builder.Append("&");
+				builder.AppendFormat("{0}={1}", item.Key, item.Value);
+				i++;
+			}
+			byte[] data = Encoding.UTF8.GetBytes(builder.ToString());
+			req.ContentLength = data.Length;
+			using (Stream reqStream = req.GetRequestStream()) {
+				reqStream.Write(data, 0, data.Length);
+				reqStream.Close();
+			}
+			#endregion
+			HttpWebResponse resp = (HttpWebResponse)req.GetResponse();
+			Stream stream = resp.GetResponseStream();
+			//获取响应内容
+			using (StreamReader reader = new StreamReader(stream, Encoding.UTF8)) {
+				result = reader.ReadToEnd();
+			}
+			return result;
+		}
+
+		/// <summary>
+		/// 指定Post地址使用Get 方式获取全部字符串
+		/// </summary>
+		/// <param name="url">请求后台地址</param>
+		/// <param name="dic">参数</param>
+		/// <returns></returns>
+		public static string Get(string url, Dictionary<string, string> dic, Dictionary<string, string> tokenDic=null) {
+			string result = "";
+			#region 添加Get 参数
+			StringBuilder builder = new StringBuilder();
+			int i = 0;
+			if (dic != null) {
+				foreach (var item in dic) {
+					if (i > 0)
+						builder.Append("&");
+					builder.AppendFormat("{0}={1}", item.Key, item.Value);
+					i++;
+				}
+			}
+			#endregion
+			url = url + "?" + builder.ToString();
+			HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
+			foreach (var item in tokenDic) {//head中加入相关信息
+				req.Headers.Add(item.Key, item.Value);
+			}
+			HttpWebResponse resp = (HttpWebResponse)req.GetResponse();
+			Stream stream = resp.GetResponseStream();
+			//获取响应内容
+			using (StreamReader reader = new StreamReader(stream, Encoding.UTF8)) {
+				result = reader.ReadToEnd();
+			}
+			return result;
+		}
+
+		/// <summary>
+		/// 指定Post地址使用Get 方式获取全部字符串
+		/// </summary>
+		/// <param name="url">请求后台地址</param>
+		/// <param name="dic">参数 需含sysid,token</param>
+		/// <returns></returns>
+		public static string PostByToken(string url, Dictionary<string, string> dic) {
+			string result = "";
+			HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
+			req.Method = "Post";
+			req.ContentType = "application/x-www-form-urlencoded";
+			req.Headers.Add("apiuser", dic["apiuser"]);
+			req.Headers.Add("token", dic["token"]);
+			#region 添加Post 参数
+			StringBuilder builder = new StringBuilder();
+			int i = 0;
+			//dic.Add("token", Common.token);
+			foreach (var item in dic.Where(b => b.Key != "apiuser" && b.Key != "token")) {
+				if (i > 0)
+					builder.Append("&");
+				builder.AppendFormat("{0}={1}", item.Key, item.Value);
+				i++;
+			}
+			byte[] data = Encoding.UTF8.GetBytes(builder.ToString());
+			req.ContentLength = data.Length;
+			using (Stream reqStream = req.GetRequestStream()) {
+				reqStream.Write(data, 0, data.Length);
+				reqStream.Close();
+			}
+			#endregion
+			HttpWebResponse resp = (HttpWebResponse)req.GetResponse();
+			Stream stream = resp.GetResponseStream();
+			//获取响应内容
+			using (StreamReader reader = new StreamReader(stream, Encoding.UTF8)) {
+				result = reader.ReadToEnd();
+			}
+			return result;
+		}
+
+		/// <summary>
+		/// 指定Post地址使用Get 方式获取全部字符串
+		/// </summary>
+		/// <param name="url">请求后台地址</param>
+		/// <param name="dic">参数</param>
+		/// <returns></returns>
+		public static string PostJsonByToken(string url, Dictionary<string, string> dic) {
+			string result = "";
+			HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
+			req.Method = "Post";
+			req.ContentType = "application/json";
+			req.Headers.Add("api_user", dic["api_user"]);
+			req.Headers.Add("api_token", dic["api_token"]);
+			#region 添加Post 参数
+			var s_jsonstr = JsonConvert.SerializeObject(dic);
+
+			byte[] data = Encoding.UTF8.GetBytes(s_jsonstr);
+			req.ContentLength = data.Length;
+			using (Stream reqStream = req.GetRequestStream()) {
+				reqStream.Write(data, 0, data.Length);
+				reqStream.Close();
+			}
+			#endregion
+			HttpWebResponse resp = (HttpWebResponse)req.GetResponse();
+			Stream stream = resp.GetResponseStream();
+			//获取响应内容
+			using (StreamReader reader = new StreamReader(stream, Encoding.UTF8)) {
+				result = reader.ReadToEnd();
+			}
+			return result;
+		}
+
+		/// <summary>
+		/// 指定Post地址使用Get 方式获取全部字符串 会自动带上token
+		/// </summary>
+		/// <param name="url">请求后台地址</param>
+		/// <param name="dic">参数</param>
+		/// <returns></returns>
+		public static string GetJsonByToken(string url, Dictionary<string, string> dic) {
+			string result = "";
+			#region 添加Get 参数
+			StringBuilder builder = new StringBuilder();
+			int i = 0;
+			if (dic != null) {
+				foreach (var item in dic.Where(b => b.Key != "api_user" && b.Key != "api_token")) {
+					if (i > 0)
+						builder.Append("&");
+					builder.AppendFormat("{0}={1}", item.Key, item.Value);
+					i++;
+				}
+			}
+			#endregion
+			url = url + "?" + builder.ToString();
+			HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
+			req.Headers.Add("api_user", dic["api_user"]);
+			req.Headers.Add("api_token", dic["api_token"]);
+			HttpWebResponse resp = (HttpWebResponse)req.GetResponse();
+			Stream stream = resp.GetResponseStream();
+			//获取响应内容
+			using (StreamReader reader = new StreamReader(stream, Encoding.UTF8)) {
+				result = reader.ReadToEnd();
+			}
+			return result;
+		}
+	}
+}

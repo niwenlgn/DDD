@@ -1,0 +1,339 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Net;
+using System.IO;
+using Newtonsoft.Json;
+
+namespace MyUtility
+{
+    public class MyUrlOp
+    {
+        /// <summary>
+        /// 指定Post地址使用Get 方式获取全部字符串
+        /// </summary>
+        /// <param name="url">请求后台地址</param>
+        /// <param name="dic">参数</param>
+        /// <returns></returns>
+        public static string Post(string url, Dictionary<string, string> dic)
+        {
+            string result = "";
+            HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
+            req.Method = "Post";
+            req.ContentType = "application/x-www-form-urlencoded";
+            #region 添加Post 参数
+            StringBuilder builder = new StringBuilder();
+            int i = 0;
+            foreach (var item in dic)
+            {
+                if (i > 0)
+                    builder.Append("&");
+                builder.AppendFormat("{0}={1}", item.Key, item.Value);
+                i++;
+            }
+            byte[] data = Encoding.UTF8.GetBytes(builder.ToString());
+            req.ContentLength = data.Length;
+            using (Stream reqStream = req.GetRequestStream())
+            {
+                reqStream.Write(data, 0, data.Length);
+                reqStream.Close();
+            }
+            #endregion
+            HttpWebResponse resp = (HttpWebResponse)req.GetResponse();
+            Stream stream = resp.GetResponseStream();
+            //获取响应内容
+            using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
+            {
+                result = reader.ReadToEnd();
+            }
+            return result;
+        }
+
+		/// <summary>
+        /// 指定Post地址使用Get 方式获取全部字符串
+        /// </summary>
+        /// <param name="url">请求后台地址</param>
+        /// <param name="dic">参数</param>
+        /// <returns></returns>
+        public static string Get(string url, Dictionary<string, string> dic)
+        {
+            string result = "";
+            #region 添加Get 参数
+            StringBuilder builder = new StringBuilder();
+            int i = 0;
+            if (dic != null)
+            {
+                foreach (var item in dic)
+                {
+                    if (i > 0)
+                        builder.Append("&");
+                    builder.AppendFormat("{0}={1}", item.Key, item.Value);
+                    i++;
+                }
+            }
+            #endregion
+            url = url + "?" + builder.ToString();
+            HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
+            HttpWebResponse resp = (HttpWebResponse)req.GetResponse();
+            Stream stream = resp.GetResponseStream();
+            //获取响应内容
+            using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
+            {
+                result = reader.ReadToEnd();
+            }
+            return result;
+        }
+
+        public static async Task<string> PostUrlAsync(string url, string appid,string token)
+        {
+            string result = "";
+            HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
+            req.Method = "Post";
+            req.ContentType = "application/x-www-form-urlencoded";
+            req.Headers.Add("appid", appid);
+            req.Headers.Add("token", token);
+            #region 添加Post 参数
+            StringBuilder builder = new StringBuilder();
+            //int i = 0;
+            //dic.Add("sysid", CommonConfig.sysid);
+            ////dic.Add("token", Common.token);
+            //foreach (var item in dic)
+            //{
+            //    if (i > 0)
+            //        builder.Append("&");
+            //    builder.AppendFormat("{0}={1}", item.Key, item.Value);
+            //    i++;
+            //}
+            byte[] data = Encoding.UTF8.GetBytes(builder.ToString());
+            req.ContentLength = data.Length;
+            using (Stream reqStream = req.GetRequestStream())
+            {
+                reqStream.Write(data, 0, data.Length);
+                reqStream.Close();
+            }
+            #endregion
+            HttpWebResponse resp = (HttpWebResponse)req.GetResponse();
+            Stream stream = resp.GetResponseStream();
+            //获取响应内容
+            using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
+            {
+                result = await Task.Run(()=> reader.ReadToEnd());
+            }
+            return result.ToString();
+        }
+
+        public static string PostUrl(string url, string appid, string token)
+        {
+            string result = "";
+            HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
+            req.Method = "Post";
+            req.ContentType = "application/x-www-form-urlencoded";
+            req.Headers.Add("appid", appid);
+            req.Headers.Add("token", token);
+            #region 添加Post 参数
+            StringBuilder builder = new StringBuilder();
+            //int i = 0;
+            //dic.Add("sysid", CommonConfig.sysid);
+            ////dic.Add("token", Common.token);
+            //foreach (var item in dic)
+            //{
+            //    if (i > 0)
+            //        builder.Append("&");
+            //    builder.AppendFormat("{0}={1}", item.Key, item.Value);
+            //    i++;
+            //}
+            byte[] data = Encoding.UTF8.GetBytes(builder.ToString());
+            req.ContentLength = data.Length;
+            using (Stream reqStream = req.GetRequestStream())
+            {
+                reqStream.Write(data, 0, data.Length);
+                reqStream.Close();
+            }
+            #endregion
+            HttpWebResponse resp = (HttpWebResponse)req.GetResponse();
+            Stream stream = resp.GetResponseStream();
+            //获取响应内容
+            using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
+            {
+                result = reader.ReadToEnd();
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// 使用泛型实体类post
+        /// </summary>
+        /// <typeparam name="T">一个数据传输对象</typeparam>
+        /// <param name="url">post地址</param>
+        /// <param name="value">实体的实现</param>
+        /// by 杨思远
+        /// <returns>请求结果</returns>
+        public static string UsingEtityPost<T>(string url, T value)
+        {
+            string result = string.Empty;
+            var modelType = typeof(T);
+            HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
+            req.Method = "Post";
+            req.ContentType = "application/x-www-form-urlencoded";
+            StringBuilder builder = new StringBuilder();
+            int i = 0;
+            foreach (var item in modelType.GetProperties())
+            {
+                if (i > 0)
+                    builder.Append("&");
+                builder.AppendFormat("{0}={1}", item.Name, item.GetValue(value));
+                i++;
+            }
+            byte[] data = Encoding.UTF8.GetBytes(builder.ToString());
+            req.ContentLength = data.Length;
+            using (Stream reqStream = req.GetRequestStream())
+            {
+                reqStream.Write(data, 0, data.Length);
+                reqStream.Close();
+            }
+            HttpWebResponse resp = (HttpWebResponse)req.GetResponse();
+            Stream stream = resp.GetResponseStream();
+            //获取响应内容
+            using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
+            {
+                result = reader.ReadToEnd();
+            }
+            return result;
+        }
+
+        public static string Post(string url, string json)
+        {
+            string result = "";
+            HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
+            req.Method = "Post";
+            req.ContentType = "application/json";
+            #region 添加Post 参数
+            byte[] data = Encoding.UTF8.GetBytes(json);
+            req.ContentLength = data.Length;
+            using (Stream reqStream = req.GetRequestStream())
+            {
+                reqStream.Write(data, 0, data.Length);
+                reqStream.Close();
+            }
+            #endregion
+            HttpWebResponse resp = (HttpWebResponse)req.GetResponse();
+            Stream stream = resp.GetResponseStream();
+            //获取响应内容
+            using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
+            {
+                result = reader.ReadToEnd();
+            }
+            return result;
+        }
+        #region 系统开启远程验证使用
+
+        /// <summary>
+        /// 指定Post地址使用Get 方式获取全部字符串
+        /// </summary>
+        /// <param name="url">请求后台地址</param>
+        /// <param name="dic">参数 需含sysid,token</param>
+        /// <returns></returns>
+        public static string PostByToken(string url, Dictionary<string, string> dic) {
+			string result = "";
+			HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
+			req.Method = "Post";
+			req.ContentType = "application/x-www-form-urlencoded";
+			req.Headers.Add("sysid", dic["sysid"]);
+			req.Headers.Add("token", dic["token"]);
+			#region 添加Post 参数
+			StringBuilder builder = new StringBuilder();
+			int i = 0;
+			//dic.Add("token", Common.token);
+			foreach (var item in dic.Where(b=>b.Key!="sysid" && b.Key!="token")) {
+				if (i > 0)
+					builder.Append("&");
+				builder.AppendFormat("{0}={1}", item.Key, item.Value);
+				i++;
+			}
+			byte[] data = Encoding.UTF8.GetBytes(builder.ToString());
+			req.ContentLength = data.Length;
+			using (Stream reqStream = req.GetRequestStream()) {
+				reqStream.Write(data, 0, data.Length);
+				reqStream.Close();
+			}
+			#endregion
+			HttpWebResponse resp = (HttpWebResponse)req.GetResponse();
+			Stream stream = resp.GetResponseStream();
+			//获取响应内容
+			using (StreamReader reader = new StreamReader(stream, Encoding.UTF8)) {
+				result = reader.ReadToEnd();
+			}
+			return result;
+		}
+
+		/// <summary>
+		/// 指定Post地址使用Get 方式获取全部字符串
+		/// </summary>
+		/// <param name="url">请求后台地址</param>
+		/// <param name="dic">参数</param>
+		/// <returns></returns>
+		public static string PostJsonstring(string url, Dictionary<string, string> dic) {
+			string result = "";
+			HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
+			req.Method = "Post";
+			req.ContentType = "application/json";
+			req.Headers.Add("sysid", dic["sysid"]);
+			req.Headers.Add("token", dic["token"]);
+			#region 添加Post 参数
+			var s_jsonstr = JsonConvert.SerializeObject(dic);
+
+			byte[] data = Encoding.UTF8.GetBytes(s_jsonstr);
+			req.ContentLength = data.Length;
+			using (Stream reqStream = req.GetRequestStream()) {
+				reqStream.Write(data, 0, data.Length);
+				reqStream.Close();
+			}
+			#endregion
+			HttpWebResponse resp = (HttpWebResponse)req.GetResponse();
+			Stream stream = resp.GetResponseStream();
+			//获取响应内容
+			using (StreamReader reader = new StreamReader(stream, Encoding.UTF8)) {
+				result = reader.ReadToEnd();
+			}
+			return result;
+		}
+
+		/// <summary>
+		/// 指定Post地址使用Get 方式获取全部字符串 会自动带上token
+		/// </summary>
+		/// <param name="url">请求后台地址</param>
+		/// <param name="dic">参数</param>
+		/// <returns></returns>
+		public static string GetByToken(string url, Dictionary<string, string> dic) {
+			string result = "";
+			#region 添加Get 参数
+			StringBuilder builder = new StringBuilder();
+			int i = 0;
+			if (dic != null) {
+				foreach (var item in dic.Where(b => b.Key != "sysid" && b.Key != "token")) {
+					if (i > 0)
+						builder.Append("&");
+					builder.AppendFormat("{0}={1}", item.Key, item.Value);
+					i++;
+				}
+			}
+			#endregion
+			url = url + "?" + builder.ToString();
+			HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
+			req.Headers.Add("sysid", dic["sysid"]);
+			req.Headers.Add("token", dic["token"]);
+			HttpWebResponse resp = (HttpWebResponse)req.GetResponse();
+			Stream stream = resp.GetResponseStream();
+			//获取响应内容
+			using (StreamReader reader = new StreamReader(stream, Encoding.UTF8)) {
+				result = reader.ReadToEnd();
+			}
+			return result;
+		}
+
+		#endregion
+    }
+}

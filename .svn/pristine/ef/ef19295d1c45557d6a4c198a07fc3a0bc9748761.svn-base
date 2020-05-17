@@ -1,0 +1,27 @@
+﻿using DDD.Entities;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace DDD.Data
+{
+    public class oaEntities : DbContext
+    {
+        public oaEntities(DbContextOptions<oaEntities> options)
+            : base(options)
+        {
+            
+        }
+
+        public DbSet<sys_user> sys_user { get; set; }
+        /// <summary>
+        /// 系统菜单
+        /// </summary>
+        public DbSet<sys_menu> sys_menu { get; set; }
+        /// <summary>
+        /// 账号目录
+        /// </summary>
+        public DbSet<sys_account> sys_account { get; set; }
+    }
+}

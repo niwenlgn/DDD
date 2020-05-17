@@ -1,0 +1,15 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using DDD_core.Filters;
+using Microsoft.AspNetCore.Mvc;
+using MyUtility.Attribute;
+
+namespace DDD_core.Controllers
+{
+    [UserAuthorize]
+    public class BaseController : Controller
+    {
+    }
+}

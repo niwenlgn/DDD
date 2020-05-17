@@ -1,0 +1,43 @@
+﻿/**********************************************************************
+ * 文件名：        MyEmail.cs
+ * 描述：          Email操作类
+ * 作者:           Sammy
+ * 日期:           2017-03-11
+ * 说明：          通过此类可以方便操作发送Email
+**********************************************************************/
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Net.Mail;
+
+namespace MyUtility
+{
+    public class MyEmail
+    {
+        /// <summary>
+        /// 发送电子邮件
+        /// </summary>
+        /// <param name="subject">邮件标题</param>
+        /// <param name="body">邮件内容</param>
+        /// <param name="mailaddress">地址</param>
+        public static void sendmail(string subject, string body, string mailaddress)
+        {
+            MailAddress from = new MailAddress("public@goodfriend.com.cn");
+            MailAddress to = new MailAddress(mailaddress);
+            MailMessage message = new MailMessage(from, to);
+            //设置邮件标题
+            message.Subject = subject;
+            //设置邮件内容
+            message.Body = body;
+            //subject = "";
+            //body = "";
+            message.BodyEncoding = System.Text.Encoding.Default;
+            message.IsBodyHtml = true;
+            SmtpClient client = new SmtpClient("mail.goodfriend.com.cn");
+            client.Credentials = new System.Net.NetworkCredential("public", "OAsf672!");
+            client.Send(message);
+        }
+    }
+}

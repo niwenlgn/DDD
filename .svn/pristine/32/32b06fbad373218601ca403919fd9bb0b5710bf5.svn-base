@@ -1,0 +1,138 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<body>
+    <div id="det">
+
+        <div class="custom-tree-container">
+            <el-tree :data="data"
+                     :props="defaultProps"
+                     :highlight-current="true"
+                     :load="loadDataTree"
+                     lazy
+                     :expand-on-click-node="false"
+                     :render-content="renderContent"
+                     node-key="id"
+                     :default-expanded-keys="['1']"
+                     @@node-click="handleNodeClick"></el-tree>
+        </div>
+
+    </div>
+</body>
+<script>
+    var det = new Vue({
+        el: "#det",
+        data: {
+            data: [],
+            defaultProps: {
+                children: "children",
+                label: "name",
+                isLeaf: "leaf"
+            }
+        },
+        mounted: function () {
+            //this.GetMenuData();
+        },
+        methods: {
+            loadDataTree(node, resolve) {
+                if (node.level === 0) {
+                    return resolve([{ id: "1", name: "主数据", objectId: "" }]);
+                }
+                $.post('@Url.Action("GetMenuData")', {}, function (data) {
+                    var res = JSON.parse(data.message);
+                        if (!res) {
+                            return;
+                        }
+                        let rootChildren = [];
+                        if (res.length > 0) {
+                            res.forEach(element => {
+                                rootChildren.push({
+                                    name: element.text,
+                                    leaf: element.children.length == 0,
+                                    objectId: element.id,
+                                    code: element.path,
+                                    nodeType: element.icon,
+                                    sortKey: element.id,
+                                    children: []
+                                });
+                            });
+                    }
+                    if (resolve) {
+                        resolve(rootChildren);//动态加载时
+                    } else {
+                        //更新节点时：
+                        node.childNodes = [];
+                        node.doCreateChildren(rootChildren);
+                    }
+                })
+            },
+            GetMenuData: function () {
+                _this = this;
+                $.post('@Url.Action("GetMenuData")', {}, function (data) {
+                    var res = JSON.parse(data.message);
+                        if (!res) {
+                            return;
+                        }
+                        let rootChildren = [];
+                        if (res.length > 0) {
+                            res.forEach(element => {
+                                rootChildren.push({
+                                    name: element.text,
+                                    leaf: element.children.length == 0,
+                                    objectId: element.id,
+                                    code: element.path,
+                                    nodeType: element.icon,
+                                    sortKey: element.id,
+                                    children: []
+                                });
+                            });
+                        }
+                })
+            },
+            renderContent: function (h, { node, data }) {
+
+                var html = "< span class='custom-tree-node' >";
+                html += "< span class='custom-tree-node' >";
+                html += "<span>{node.label}</span>";
+                html += "<span>";
+                html += "<i";
+                html += "v-show={";
+                html += "node.level  == 1 || data.nodeType == FunctionNodeType.BizFolder";
+                html += "}";
+                html += "class='el-icon-plus'";
+                html += "title='新增目录'";
+                html += "on-click={() => this.editBizFolder(node, 'add', resolve)}";
+                html += " />";
+                html += "<i";
+                html += "v-show={data.nodeType == FunctionNodeType.BizFolder}";
+                html += "class='el-icon-edit'";
+                html += "title='编辑目录'";
+                html += "on-click={() => this.editBizFolder(node, 'edit')}";
+                html += "/>";
+                html += "<i";
+                html += "v-show={data.nodeType == FunctionNodeType.BizFolder}";
+                html += "class='el-icon-document'";
+                html += "title='添加主数据'";
+                html += "on-click={() => this.addBizObject(node)}";
+                html += "/>";
+                html += "</span>";
+                html += "</span >";
+
+                return (
+                    html
+                    );
+
+            },
+            handleNodeClick(data) {
+                console.log(data);
+            },
+            append(data) { },
+            remove(node, data) { },
+            editBizFolder() { },
+            addBizObject() { }
+        }
+    })
+</script>

@@ -1,0 +1,366 @@
+﻿using System;
+using System.Data;
+using System.Configuration;
+using System.Web;
+using System.Web.Security;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Web.UI.WebControls.WebParts;
+using System.Web.UI.HtmlControls;
+using System.Data.Sql;
+using System.Data.OracleClient;
+using System.Text;
+using System.Collections;
+
+
+namespace MyUtility
+{
+    public class OraSqlHelper
+    {
+        //数据库连接字符串(web.config来配置)		
+        public static string connStr = Configs.GetConfigValue("OraConnection");//ConfigurationManager.AppSettings["OraConnection"];
+
+
+        /// <summary>
+        /// 执行SQL语句返回值判断是否执行成功
+        /// </summary>
+        /// <param name="cmdText">SQL语句</param>
+        /// <returns>影响的记录数</returns>
+        public static int ExecuteNonQuery(string cmdText)
+        {
+            int l_i;
+            using (OracleConnection conn = new OracleConnection(connStr))
+            {
+                using (OracleCommand cmd = new OracleCommand())
+                {
+
+                    try
+                    {
+                        PrepareCommand(cmd, conn, FilterSqlInner(cmdText), null);
+                        l_i = cmd.ExecuteNonQuery();
+                        //conn.Dispose();
+                        //conn.Close();
+                        return l_i;
+                    }
+                    catch (System.Data.OracleClient.OracleException e)
+                    {
+                        throw new Exception(e.Message);
+                    }
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// SQL语句初始化
+        /// </summary>
+        /// <param name="cmd">OracleCommand对象</param>
+        /// <param name="conn">OracleConnection对象</param>
+        /// <param name="cmdtext">SQL语句</param>
+        /// <param name="trans"></param>
+        private static void PrepareCommand(OracleCommand cmd, OracleConnection conn, string cmdtext, OracleTransaction trans)
+        {
+            if (conn.State != ConnectionState.Open)
+                conn.Open();
+            cmd.Connection = conn;
+            cmd.CommandText = cmdtext;
+            cmd.CommandType = CommandType.Text;
+            if (trans != null)
+                cmd.Transaction = trans;
+        }
+
+
+        /// <summary>
+        /// 执行SQL语句返回DS
+        /// </summary>
+        /// <param name="cmdText">SQL语句</param>
+        /// <returns>DS</returns>
+        public static DataSet ExecuteQuery(string cmdText)
+        {
+            using (OracleConnection conn = new OracleConnection(connStr))
+            {
+                DataSet ds = new DataSet();
+                try
+                {
+                    conn.Open();
+                    OracleDataAdapter da = new OracleDataAdapter(FilterSqlInner(cmdText), conn);
+                    da.Fill(ds, "ds");
+                }
+                catch (System.Data.OracleClient.OracleException e)
+                {
+                    //conn.Close();
+                    throw new Exception(e.Message);
+                }
+                finally
+                {
+                    //conn.Dispose();
+                    //conn.Close();
+                }
+                return ds;
+            }
+        }
+
+
+        /// <summary>
+        /// 执行SQL语句返回字符串的值
+        /// </summary>
+        /// <param name="cmdText">SQL语句</param>
+        /// <returns>字符串</returns>
+        public static string returnval(string cmdText)
+        {
+            using (OracleConnection conn = new OracleConnection(connStr))
+            {
+                using (OracleCommand cmd = new OracleCommand())
+                {
+                    object obj;
+                    string l_str;
+                    l_str = "";
+                    try
+                    {
+                        PrepareCommand(cmd, conn, cmdText, null);
+                        obj = cmd.ExecuteScalar();
+                        if (obj != null)
+                        {
+                            l_str = obj.ToString();
+                        }
+                        return l_str;
+                    }
+                    catch (System.Data.OracleClient.OracleException e)
+                    {
+                        //conn.Close();
+                        throw new Exception(e.Message);
+                    }
+                    finally
+                    {
+                    }
+                }
+            }
+        }
+
+        public static int ExecuteSqlTran(ArrayList SqlStringlist)
+        {
+            string strsql;
+            using (OracleConnection conn = new OracleConnection(connStr))
+            {
+                using (OracleCommand cmd = new OracleCommand())
+                {
+                    conn.Open();
+                    OracleTransaction tra = conn.BeginTransaction();
+                    try
+                    {
+                        cmd.Connection = conn;
+                        cmd.CommandType = CommandType.Text;
+                        cmd.Transaction = tra;
+                        for (int i = 0; i < SqlStringlist.Count; i++)
+                        {
+                            strsql = SqlStringlist[i].ToString();
+                            cmd.CommandText = strsql;
+                            cmd.ExecuteNonQuery();
+                        }
+                        tra.Commit();
+                        return 1;
+
+                    }
+                    catch (System.Data.OracleClient.OracleException e)
+                    {
+                        tra.Rollback();
+                        throw new Exception(e.Message);
+                        return 0;
+                    }
+                    finally
+                    {
+
+                    }
+                }
+            }
+        }
+
+        public static DataSet RunProcedure(string storedProcName, IDataParameter[] parameters)
+        {
+            using (OracleConnection conn = new OracleConnection(connStr))
+            {
+                try
+                {
+                    DataSet ds = new DataSet();
+                    OracleDataAdapter da = new OracleDataAdapter();
+                    conn.Open();
+                    da.SelectCommand = BuildQueryCommand(conn, storedProcName, parameters);
+                    da.Fill(ds, "ds");
+                    conn.Close();
+                    return ds;
+                }
+                catch (System.Data.OracleClient.OracleException e)
+                {
+                    throw new Exception(e.Message);
+                }
+            }
+        }
+
+        public static DataSet RunProcedurea(string storedProcName, IDataParameter[] parameters)
+        {
+            using (OracleConnection conn = new OracleConnection(connStr))
+            {
+                try
+                {
+                    conn.Open();
+                    OracleTransaction trans = conn.BeginTransaction();
+                    DataSet ds = new DataSet();
+                    OracleDataAdapter da = new OracleDataAdapter();
+                    da.SelectCommand = BuildQueryCommanda(conn, storedProcName, parameters, trans);
+                    da.Fill(ds, "ds");
+                    trans.Commit();
+                    conn.Close();
+                    return ds;
+                }
+                catch (System.Data.OracleClient.OracleException e)
+                {
+                    throw new Exception(e.Message);
+                }
+            }
+        }
+
+        private static OracleCommand BuildQueryCommand(OracleConnection conn, string storedProcName, IDataParameter[] parameters)
+        {
+            OracleCommand cmd = new OracleCommand(storedProcName, conn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            foreach (OracleParameter parameter in parameters)
+            {
+                if (parameter != null)
+                {
+                    // 检查未分配值的输出参数,将其分配以DBNull.Value.
+                    if ((parameter.Direction == ParameterDirection.InputOutput || parameter.Direction == ParameterDirection.Input) &&
+                        (parameter.Value == null))
+                    {
+                        parameter.Value = DBNull.Value;
+                    }
+                    cmd.Parameters.Add(parameter);
+                }
+            }
+
+            return cmd;
+        }
+
+        private static OracleCommand BuildQueryCommanda(OracleConnection conn, string storedProcName, IDataParameter[] parameters, OracleTransaction trans)
+        {
+            OracleCommand cmd = new OracleCommand(storedProcName, conn);
+            cmd.Transaction = trans;
+            cmd.CommandType = CommandType.StoredProcedure;
+            foreach (OracleParameter parameter in parameters)
+            {
+                if (parameter != null)
+                {
+                    // 检查未分配值的输出参数,将其分配以DBNull.Value.
+                    if ((parameter.Direction == ParameterDirection.InputOutput || parameter.Direction == ParameterDirection.Input) &&
+                        (parameter.Value == null))
+                    {
+                        parameter.Value = DBNull.Value;
+                    }
+                    cmd.Parameters.Add(parameter);
+                }
+            }
+
+            return cmd;
+        }
+
+        public static string FilterSql(string source)
+        {
+            //单引号替换成两个单引号
+            source = source.Replace("'", "''");
+            source = source.Replace("\"", "“");
+            source = source.Replace("|", "｜");
+            //半角封号替换为全角封号，防止多语句执行
+            source = source.Replace(";", "；");
+
+            //半角括号替换为全角括号
+            source = source.Replace("(", "（");
+            source = source.Replace(")", "）");
+            source = source.Replace("--", "");
+
+            /**/
+            ///////////////要用正则表达式替换，防止字母大小写得情况////////////////////
+
+            //去除执行存储过程的命令关键字
+            source = source.Replace("Exec", "");
+            source = source.Replace("Execute", "");
+
+            //去除系统存储过程或扩展存储过程关键字
+            source = source.Replace("xp_", "x p_");
+            source = source.Replace("sp_", "s p_");
+
+            //防止16进制注入
+            source = source.Replace("0x", "0 x");
+
+            return source;
+
+        }
+
+        public static string FilterSqlInner(string source)
+        {
+            //单引号替换成两个单引号
+            //source = source.Replace("'", "''");
+            source = source.Replace("\"", "“");
+            source = source.Replace("|", "｜");
+            //半角封号替换为全角封号，防止多语句执行
+            source = source.Replace(";", "；");
+
+            //半角括号替换为全角括号
+            //source = source.Replace("(", "（");
+            //source = source.Replace(")", "）");
+            source = source.Replace("--", "");
+
+            /**/
+            ///////////////要用正则表达式替换，防止字母大小写得情况////////////////////
+
+            //去除执行存储过程的命令关键字
+            source = source.Replace("Exec", "");
+            source = source.Replace("Execute", "");
+
+            //去除系统存储过程或扩展存储过程关键字
+            source = source.Replace("xp_", "x p_");
+            source = source.Replace("sp_", "s p_");
+
+            //防止16进制注入
+            source = source.Replace("0x", "0 x");
+
+            return source;
+
+        }
+
+        /// <summary>
+        /// 执行SQL语句返回值判断是否执行成功
+        /// </summary>
+        /// <param name="cmdText">SQL语句</param>
+        /// <returns>影响的记录数</returns>
+        public static int ExecuteNonQuery(string cmdText, params OracleParameter[] parameter)
+        {
+            int l_i;
+            using (OracleConnection conn = new OracleConnection(connStr))
+            {
+                using (OracleCommand cmd = new OracleCommand())
+                {
+                    try
+                    {
+                        //PrepareCommand(cmd, conn, cmdText, null);
+                        conn.Open();
+                        cmd.Connection = conn;
+                        cmd.CommandType = CommandType.Text;
+                        cmd.CommandText = cmdText;
+                        foreach (OracleParameter par in parameter)
+                        {
+                            cmd.Parameters.Add(par);
+                        }
+                        l_i = cmd.ExecuteNonQuery();
+                        //conn.Dispose();
+                        //conn.Close();
+                        return l_i;
+                    }
+                    catch (System.Data.OracleClient.OracleException e)
+                    {
+                        return 0;
+                        throw new Exception(e.Message);
+                    }
+                }
+            }
+        }
+    }
+}

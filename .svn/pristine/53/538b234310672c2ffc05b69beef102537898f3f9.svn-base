@@ -1,0 +1,34 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace MyUtility.Log {
+	public interface ILog {
+		/// <summary>
+		/// 记录方法执行时间
+		/// </summary>
+		/// <param name="info">描述</param>
+		/// <param name="action">方法</param>
+		void Log_Time(string info, Action action);
+		/// <summary>
+		/// 给方法加上Try...Catch...
+		/// </summary>
+		/// <param name="info">描述</param>
+		/// <param name="action">方法</param>
+		void Log_Exception(string info, Action action);
+		/// <summary>
+		/// 输出信息日志
+		/// </summary>
+		/// <param name="t">类</param>
+		/// <param name="msg">信息</param>
+		void WriteInfoLog(Type t, string msg);
+		/// <summary>
+		/// 输出错误日志
+		/// </summary>
+		/// <param name="t">类</param>
+		/// <param name="ex">Exception</param>
+		void WriteErrorLog(Type t, Exception ex);
+	}
+}

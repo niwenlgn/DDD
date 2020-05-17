@@ -1,0 +1,43 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using DDD.DTO;
+using DDD_core.Controllers;
+using Microsoft.AspNetCore.Mvc;
+using System.Linq;
+using DDD.IRepository;
+
+namespace DDD_core.Areas.GeLuBo.Controllers
+{
+    public class GeLuBoAPIController : BaseController
+    {
+
+        private Isys_menuRepository _MenuRepository { get; set; }
+
+        public GeLuBoAPIController(Isys_menuRepository Isys_menuRepository)
+        {
+            _MenuRepository = Isys_menuRepository;
+        }
+
+        public IActionResult Index() => View();
+
+        public void SetTokenAsync(string name, string token)
+        {
+            this.SetCache("name", name);
+            this.SetCache("token", token);
+        }
+
+        public IActionResult Tree()
+        {
+            ViewBag.token = GetCache("token");
+            ViewBag.name = GetCache("name");
+            return View();
+        }
+
+        public IActionResult GetJsonTree(string path)
+        {
+            return Json(_MenuRepository.GetJsonTree(path, GetCache("token")));
+        }
+    }
+}

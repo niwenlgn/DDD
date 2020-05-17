@@ -1,0 +1,18 @@
+﻿using DDD.Entities;
+using DDD.IRepository;
+using Microsoft.EntityFrameworkCore;
+
+namespace DDD.Repository
+{
+    public class sys_accountRepository : BaseRepository<sys_account>,Isys_accountRepository
+    {
+        private DbContext _dbcontext;
+        private DbSet<sys_account> _sys_account;
+        public sys_accountRepository(IUnitOfWork uow)
+         : base(uow)
+        {
+            _dbcontext = (uow as UnitOfWork)._dbcontext;
+            _sys_account = _dbcontext.Set<sys_account>();
+        }
+    }
+}

@@ -1,0 +1,83 @@
+﻿/**********************************************************************
+ * 文件名：        LinqToDataTable.cs
+ * 描述：          将linq to sql查询的结果转换成datatable
+ * 作者:           Sammy
+ * 日期:           2016-10-05
+ * 说明：          对linq to sql查询进行扩展可以将结果转换成datatable
+**********************************************************************/
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Data;
+using System.Reflection;
+using System.Collections;
+
+/// <summary>
+/// LinqToDataTable 的摘要说明
+/// </summary>
+namespace MyUtility
+{
+	public static class LinqToDataTableExtend
+    {
+        /// <summary>
+        /// 将查询结果转呈DataTable
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="varlist"></param>
+        /// <param name="fn"></param>
+        /// <returns></returns>
+        static public DataTable ToDataTable<T>(this IEnumerable<T> varlist, CreateRowDelegate<T> fn)
+        {
+            DataTable dtReturn = new DataTable();
+
+            // column names
+
+            PropertyInfo[] oProps = null;
+
+            // Could add a check to verify that there is an element 0
+
+            foreach (T rec in varlist)
+            {
+
+                // Use reflection to get property names, to create table, Only first time, others will follow
+
+                if (oProps == null)
+                {
+
+                    oProps = ((Type)rec.GetType()).GetProperties();
+
+                    foreach (PropertyInfo pi in oProps)
+                    {
+
+                        Type colType = pi.PropertyType; if ((colType.IsGenericType) && (colType.GetGenericTypeDefinition() == typeof(Nullable<>)))
+                        {
+
+                            colType = colType.GetGenericArguments()[0];
+
+                        }
+
+                        dtReturn.Columns.Add(new DataColumn(pi.Name, colType));
+
+                    }
+
+                }
+
+                DataRow dr = dtReturn.NewRow(); foreach (PropertyInfo pi in oProps)
+                {
+
+                    dr[pi.Name] = pi.GetValue(rec, null) == null ? DBNull.Value : pi.GetValue(rec, null);
+
+                }
+
+                dtReturn.Rows.Add(dr);
+
+            }
+
+            return (dtReturn);
+
+        }
+
+        public delegate object[] CreateRowDelegate<T>(T t);
+    }
+}

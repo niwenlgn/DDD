@@ -1,0 +1,78 @@
+﻿/*
+ * 网络提交帮助类
+ */
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Net;
+using System.Net.Http;
+using System.IO;
+using Newtonsoft.Json;
+
+
+namespace MyUtility {
+	public static class MyHttpClient {
+		/// <summary>
+		/// 使用异步方式Post Dictionary传值
+		/// </summary>
+		/// <param name="url">Url</param>
+		/// <param name="dic">Dictionary以Key值传入form提交</param>
+		/// <returns></returns>
+		public async static Task<string> PostAsync(string url,Dictionary<string,string> dic) {
+			using (HttpClient hpc = new HttpClient()) {
+				FormUrlEncodedContent content = new FormUrlEncodedContent(dic);
+				var t = await hpc.PostAsync(url, content);
+				HttpResponseMessage reponseMessage = t;
+				reponseMessage.EnsureSuccessStatusCode();
+				var sReponse = await reponseMessage.Content.ReadAsStringAsync();
+				return sReponse;
+			}
+		}
+
+		/// <summary>
+		/// 使用异步方式Post Json传值
+		/// </summary>
+		/// <param name="url">Url</param>
+		/// <param name="sContent">Json字符串</param>
+		/// <returns></returns>
+		public async static Task<string> PostAsync(string url, string sContent) {
+			using (HttpClient hpc = new HttpClient()) {
+				StringContent content = new StringContent(sContent);
+				content.Headers.ContentType.MediaType = "application/json";
+				var t = await hpc.PostAsync(url, content);
+				HttpResponseMessage reponseMessage = t;
+				reponseMessage.EnsureSuccessStatusCode();
+				var sReponse = await reponseMessage.Content.ReadAsStringAsync();
+				return sReponse;
+			}
+		}
+
+		/// <summary>
+		/// 使用异步方式Get
+		/// </summary>
+		/// <param name="url">Url</param>
+		/// <param name="dic">Dictionary以Key值传入form提交</param>
+		/// <returns></returns>
+		public async static Task<string> GetAsync(string url, Dictionary<string, string> dic) {
+			using (HttpClient hpc = new HttpClient()) {
+				FormUrlEncodedContent content = new FormUrlEncodedContent(dic);
+				//添加Get参数
+				StringBuilder sb = new StringBuilder();
+				int i = 0;
+				foreach (var item in dic) {
+					if (i>0) sb.Append("&");
+					sb.AppendFormat("{0}={1}", item.Key, item.Value);
+					i++;
+				}
+				url = url + "?" + sb.ToString();
+				var t = await hpc.GetAsync(url);
+				HttpResponseMessage reponseMessage = t;
+				reponseMessage.EnsureSuccessStatusCode();
+				var sReponse = await reponseMessage.Content.ReadAsStringAsync();
+				return sReponse;
+			}
+		}
+	}
+}

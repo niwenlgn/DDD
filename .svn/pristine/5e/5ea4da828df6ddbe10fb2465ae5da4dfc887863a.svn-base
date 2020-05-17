@@ -1,0 +1,51 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace MyUtility.Common
+{
+   public static class Common
+    {
+        public static string OrderNumber(string orderNum, string initials)
+        {
+            string str = DateTime.Now.ToString("yyMMdd");
+
+            if (string.IsNullOrWhiteSpace(orderNum))
+            {
+                orderNum = string.Format("{0}{1}001", initials, str);
+            }
+            else
+            {
+                string strTime = orderNum.Substring(initials.Length, orderNum.Length - (3 + initials.Length));
+
+                if (Convert.ToInt32(strTime) < Convert.ToInt32(str))
+                {
+                    orderNum = string.Format("{0}{1}001", initials, str);
+                }
+                else
+                {
+                    string sNum = orderNum.Substring(orderNum.Length - 3);
+                    int intNum = Convert.ToInt32(sNum);
+                    intNum += 1;
+                    string strNum = string.Empty;
+                    switch (intNum.ToString().Length)
+                    {
+                        case 1:
+                            strNum = string.Format("00{0}", intNum);
+                            break;
+                        case 2:
+                            strNum = string.Format("0{0}", intNum);
+                            break;
+                        default:
+                            strNum = intNum.ToString();
+                            break;
+                    }
+                    orderNum = string.Format("{0}{1}{2}", initials, strTime, strNum);
+                }
+            }
+            return orderNum;
+        }
+    }
+}

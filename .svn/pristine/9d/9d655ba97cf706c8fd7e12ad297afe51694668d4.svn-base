@@ -1,0 +1,39 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace MyUtility.AttributeExtend {
+	public class EnableCacheAttribute : Attribute {
+		public CacheType _type;
+		public int _time;
+		/// <summary>
+		/// 设定是否要开启缓存，
+		/// </summary>
+		/// <param name="type">Method 方法为key,MethodUserid方法用户Id为key,MethodUseridParam方法用户id参数为key</param>
+		public EnableCacheAttribute(CacheType type,int time=30) {
+			_type = type;
+			_time = time;
+		}
+	}
+
+	public enum CacheType {
+		/// <summary>
+		/// Method 方法为key
+		/// </summary>
+		Method = 0,
+		/// <summary>
+		/// MethodUserid方法用户Id为key
+		/// </summary>
+		MethodUserid = 1,
+		/// <summary>
+		/// MethodUseridParam方法用户id参数为key
+		/// </summary>
+		MethodUseridParam=2,
+		/// <summary>
+		/// MethodParam方法参数为key
+		/// </summary>
+		MethodParam=3
+	}
+}

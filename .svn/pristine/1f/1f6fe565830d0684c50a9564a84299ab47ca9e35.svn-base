@@ -1,0 +1,46 @@
+﻿using AutoMapper;
+using DDD.DTO;
+using DDD.Entities;
+using DDD.IRepository;
+using DDD.IService;
+using MyUtility;
+using System;
+using System.Linq;
+
+namespace DDD.Service
+{
+    public class sys_menuService : Isys_menuService
+    {
+        private Isys_menuRepository _sys_menuRepository { get; set; }
+        private readonly IMapper _mapper;
+        private Isys_accountRepository _sys_account { get; set; }
+        public sys_menuService(Isys_menuRepository sysRepository, Isys_accountRepository Isys_accountRepository, IMapper IMapper)
+        {
+            _sys_menuRepository = sysRepository;
+            _sys_account = Isys_accountRepository;
+            _mapper = IMapper;
+        }
+        public ResponseMessageDTO GetSysMenu(string user)
+        {
+            return _sys_menuRepository.GetTree();
+        }
+
+        public ResponseMessageDTO VerifyPassword(sys_accountDTO dto)
+        {
+            var success = _sys_account.Where(c => c.account.Equals(dto.account) && c.password.Equals(dto.password)).Any();
+            return new ResponseMessageDTO() { Success = success, Message = success ? "登录成功":"用户名或密码错误！" };
+        }
+
+        public ResponseMessageDTO GetSysMenu(MenuDTO dto)
+        {
+            try {
+                var res = _sys_menuRepository.Where(c => c.highnode == dto.id && c.system == dto.system)?.ToJson();
+                return new ResponseMessageDTO() { Success = true, Message = res };
+            }
+            catch (Exception ex)
+            {
+                return new ResponseMessageDTO() { Success = false, Message = ex.Message };
+            }
+        }
+    }
+}

@@ -1,0 +1,155 @@
+﻿@using System.Linq
+@using DDD.DTO
+@{
+
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Index</title>
+
+
+</head>
+<body>
+    <div id="app">
+        <el-container>
+            <el-header>
+                <table style="width: 100%">
+                    <tr>
+                        <td style="width: 135px">
+                            <img src="~/images/logo.png" />
+                        </td>
+                        <td style=" width: 600px; height: 50px; text-align: right;
+                                    line-height: 60px; color: #fff; font-size: 20px;">
+                            <span style="font-size:30px">@ViewData["system_name"]</span>
+                        </td>
+                        <td style="margin-top: -24px;  margin-left: 330px; color: #fff;text-align:right;">
+                            当前用户：{{username}}
+                        <td style="width:20px" />
+                        <td style="margin-top: -31px;  margin-left: 250px;color: #fff; width:100px; text-align:left;">
+                            <el-dropdown @@command="handleCommand">
+                                <span class="el-dropdown-link">
+                                    <i class="el-icon-user-solid"></i>
+                                </span>
+                                <el-dropdown-menu slot="dropdown">
+                                    <el-dropdown-item disabled command="个人设置">个人设置</el-dropdown-item>
+                                    <el-dropdown-item disabled command="个人设置">密码修改</el-dropdown-item>
+                                    <el-dropdown-item command="退出登录">退出登录</el-dropdown-item>
+                                </el-dropdown-menu>
+                            </el-dropdown>
+                        </td>
+                    </tr>
+                </table>
+            </el-header>
+            <el-container>
+                <el-aside width="200px">
+
+                    <el-menu :default-active="2"
+                             class="el-menu-vertical-demo"
+                             @@open="handleOpen"
+                             @@close="handleClose"
+                             background-color="#222d32"
+                             text-color="#fff"
+                             active-text-color="#ffd04b"
+                             style="height:100%;"
+                             unique-opened router>
+                        <div v-for="(item,index) in navList" :key="index">
+                            <div v-if="item.children && item.children.length>0">
+                                <el-submenu :index="item.id">
+                                    <template slot="title">
+                                        {{item.text}}
+                                    </template>
+                                    <div v-for="(item_2,index_2) in item.children" :key="index_2">
+                                        <div v-if="item_2.children && item_2.children.length>0">
+                                            <el-submenu :index="item_2.id">
+                                                <template slot="title">
+                                                    {{item_2.text}}
+                                                </template>
+                                                <div v-for="(item_3,index_3) in item_2.children" :key="index_3">
+                                                    <div v-if="item_3.children && item_3.children.length>0">
+                                                        <el-submenu :index="item_3.id">
+                                                            <template slot="title">
+                                                                {{item_3.text}}
+                                                            </template>
+                                                            <div v-for="(item_4,index_4) in item_3.children" :key="index_4">
+                                                                <div v-if="item_4.children && item_4.children.length>0">
+                                                                    <el-submenu :index="item_4.id">
+                                                                        <template slot="title">
+                                                                            {{item_4.text}}
+                                                                        </template>
+                                                                    </el-submenu>
+                                                                </div>
+                                                                <div v-else>
+                                                                    <el-menu-item :index="item_4.id" @@click="addTab( item_4.path )">
+                                                                        <i :class="item_4.iconCls"></i>
+                                                                        {{item_4.text}}
+                                                                    </el-menu-item>
+                                                                </div>
+                                                            </div>
+                                                        </el-submenu>
+                                                    </div>
+                                                    <div v-else>
+                                                        <el-menu-item :index="item_3.id" @@click="addTab( item_3.path )">
+                                                            <i :class="item_3.iconCls"></i>
+                                                            {{item_3.text}}
+                                                        </el-menu-item>
+                                                    </div>
+                                                </div>
+                                            </el-submenu>
+                                        </div>
+                                        <div v-else>
+                                            <el-menu-item :index="item_2.id" @@click="addTab( item_2.path )">
+                                                <i :class="item_2.iconCls"></i>
+                                                {{item_2.text}}
+                                            </el-menu-item>
+                                        </div>
+                                    </div>
+                                </el-submenu>
+                            </div>
+                            <div v-else>
+                                <el-menu-item :index="item.id" @@click="addTab( item.path )">
+                                    <i :class="item.iconCls"></i>
+                                    {{item.text}}
+                                </el-menu-item>
+                            </div>
+                        </div>
+                    </el-menu>
+
+                </el-aside>
+                <el-main style="width:100%;height:100%;">
+                    <div style="width:100%;height:100%; text-align:center;position:relative;">
+                        <iframe id="frmWorkArea" name="frmWorkArea" src="" sandbox="allow-top-navigation allow-same-origin allow-forms allow-scripts" style="width:100%; height:100%; " frameborder="0" scrolling="yes"></iframe>
+                    </div>
+                </el-main>
+            </el-container>
+        </el-container>
+    </div>
+</body>
+</html>
+<script>
+    var app = new Vue({
+        el: "#app",
+        data: {
+            username: '@Html.Raw(ViewData["username"])',
+            navList: JSON.parse('@Html.Raw(ViewData["jsonmenu"])'.replace(/&quot;/g, "\"")),
+        },
+        methods: {
+            handleOpen(key, keyPath) {
+                console.log(key, keyPath);
+            },
+            handleClose(key, keyPath) {
+                console.log(key, keyPath);
+            },
+            addTab(url) {
+                if (url != "") {      
+                    $("#frmWorkArea").attr("src", url);
+                }
+            },
+            handleCommand(command) {
+                alert(command + '功能正在完善');
+            }
+        }
+    });                                                           
+</script>

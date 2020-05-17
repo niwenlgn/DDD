@@ -1,0 +1,22 @@
+﻿/*
+ * 枚举特性设置
+ */
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace MyUtility.AttributeExtend 
+{
+
+    public class EnumValueAttribute : Attribute
+    {
+        public string _value { get; set; }
+
+        public EnumValueAttribute(string value)
+        {
+            _value = value;
+        }
+    }
+}

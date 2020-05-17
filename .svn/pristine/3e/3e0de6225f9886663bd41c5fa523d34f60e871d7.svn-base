@@ -1,0 +1,40 @@
+﻿using Microsoft.EntityFrameworkCore;
+namespace DDD.Data
+{
+    public class EFContextFactory
+    {
+        /// <summary>
+        /// 创建EF上下文对象,已存在就直接取,不存在就创建,保证线程内是唯一。
+        /// </summary>
+        /// <returns></returns>
+        public static DbContext GetDbContext()
+        {
+            DbContext context = CallContext.GetData("oaEntities") as oaEntities;
+            if (context == null)
+            {
+                context = new oaEntities(new DbContextOptions<oaEntities>());
+                CallContext.SetData("oaEntities", context);
+            }
+            return context;
+        }
+
+        /// <summary>
+        /// 创建新的上下文对象 与GetDbContext区别是此功能是创建新的对象
+        /// </summary>
+        /// <returns></returns>
+        public static DbContext GetNewDb()
+        {
+            DbContext context = new oaEntities(new DbContextOptions<oaEntities>());
+            return context;
+        }
+
+        /// <summary>
+        /// 业务逻辑处理完成以后建议将上下文线程释放掉
+        /// </summary>
+        public static void Dispose()
+        {
+            DbContext context = CallContext.GetData("oaEntities") as oaEntities;
+            context.Dispose();
+        }
+    }
+}

@@ -1,0 +1,77 @@
+﻿using DDD.DTO;
+using DDD.Entities;
+using DDD.IRepository;
+using Microsoft.EntityFrameworkCore;
+using MyUtility.Json.ElementTree;
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using System.Text;
+using MyUtility;
+
+namespace DDD.Repository
+{
+    public partial class SysRepository : BaseRepository<sys_menu>, ISysRepository
+    {
+        private DbContext _dbcontext;
+        private DbSet<sys_menu> sys_menu;
+
+        public SysRepository(IUnitOfWork uow)
+         : base(uow)
+        {
+            _dbcontext = (uow as UnitOfWork)._dbcontext;
+            sys_menu = _dbcontext.Set<sys_menu>();
+        }
+
+        public ResponseMessageDTO GetTree()
+        {
+            try
+            {
+                List<TreeModel> list = GetTreeList(0);
+                string json = list.ToJson();
+                return new ResponseMessageDTO() { Success = true, Message = json };
+            }
+            catch (Exception ex)
+            {
+                return new ResponseMessageDTO() { Success = false, Message = ex.Message };
+            }
+        }
+
+        public List<TreeModel> GetTreeList(int ParentID)
+        {
+            List<TreeModel> TreeList = new List<TreeModel>();
+            List<sys_menu> ModelList = GetChildMenuList(ParentID);
+            foreach (var item in ModelList)
+            {
+                TreeModel m = new TreeModel();
+                m.id = item.id.ToString();
+                m.text = item.name.ToString();
+                m.path = item.path;
+                m.iconCls = item.icon;
+                m.children = GetTreeList(item.id);
+                TreeList.Add(m);
+            }
+            return TreeList;
+        }
+        /// <summary>
+        /// 获取所有菜单数据
+        /// </summary>
+        /// <returns></returns>
+        public List<sys_menu> GetAllMenuList()
+        {
+            var list = sys_menu.Where(c=>c.highnode != null).ToList<sys_menu>();
+            return list;
+        }
+        /// <summary>
+        /// 根据父节点获取子节点
+        /// </summary>
+        /// <param name="ParentID"></param>
+        /// <returns></returns>
+        public List<sys_menu> GetChildMenuList(int ParentID)
+        {
+            List<sys_menu> list = GetAllMenuList();
+            var result = list.Where(x => x.highnode == ParentID);
+            return result.ToList();
+        }
+    }
+}

@@ -1,0 +1,18 @@
+﻿using DDD.Entities;
+using MyUtility.Interface;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using DDD.DTO;
+
+namespace DDD.IRepository
+{
+    public interface ISysRepository : IBaseRepository<sys_menu>, IDependency
+    {
+        /// <summary>
+        /// 获取JSON菜单树
+        /// </summary>
+        /// <returns></returns>
+        ResponseMessageDTO GetTree();
+    }
+}

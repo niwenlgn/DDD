@@ -1,0 +1,29 @@
+﻿/*
+ * 导出Excel的相关特性设置
+ */
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace MyUtility
+{
+    [AttributeUsage(AttributeTargets.Property,Inherited=true)]
+    public class TitleAttribute:Attribute
+    {
+        public string TitleName { get; set; }
+        public int Width { get; set; }
+
+        /// <summary>
+        /// 导出Excel的相关特性
+        /// </summary>
+        /// <param name="title">标题</param>
+        /// <param name="width">列宽度字符长度设置</param>
+        public TitleAttribute(string title,int width)
+        {
+            TitleName = title;
+            Width = width;
+        }
+    }
+}

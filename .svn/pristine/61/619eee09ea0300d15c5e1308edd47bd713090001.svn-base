@@ -1,0 +1,125 @@
+﻿/**********************************************************************
+ * 文件名：        JsonHelper.cs
+ * 描述：          Json转化类
+ * 作者:           Sammy
+ * 日期:           2016-10-07
+ * 说明：          将DataTable转为为Json和将Json转化为DataTable
+**********************************************************************/
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Data;
+using System.Collections;
+using Newtonsoft.Json;
+
+/// <summary>
+/// JsonConvert 的摘要说明
+/// </summary>
+namespace MyUtility
+{
+    public static class JsonHelper
+    {
+        #region DataTable 转换为Json 字符串
+        /// <summary>
+        /// DataTable 对象 转换为Json 字符串
+        /// </summary>
+        /// <param name="dt"></param>
+        /// <returns></returns>
+        public static string ToJson(this DataTable dt)
+        {
+            ArrayList arrayList = new ArrayList();
+            foreach (DataRow dataRow in dt.Rows)
+            {
+                Dictionary<string, object> dictionary = new Dictionary<string, object>();  //实例化一个参数集合
+                foreach (DataColumn dataColumn in dt.Columns)
+                {
+                    dictionary.Add(dataColumn.ColumnName, dataRow[dataColumn.ColumnName].ToStr());
+                }
+                arrayList.Add(dictionary); //ArrayList集合中添加键值
+            }
+
+            return JsonConvert.SerializeObject(arrayList);  //返回一个json字符串
+        }
+        #endregion
+
+        #region Json 字符串 转换为 DataTable数据集合
+        /// <summary>
+        /// Json 字符串 转换为 DataTable数据集合
+        /// </summary>
+        /// <param name="json"></param>
+        /// <returns></returns>
+        public static DataTable ToDataTable(this string json)
+        {
+            DataTable dataTable = new DataTable();  //实例化
+            DataTable result;
+            try
+            {
+                ArrayList arrayList = JsonConvert.DeserializeObject<ArrayList>(json);
+                if (arrayList.Count > 0)
+                {
+                    foreach (Dictionary<string, object> dictionary in arrayList)
+                    {
+                        if (dictionary.Keys.Count<string>() == 0)
+                        {
+                            result = dataTable;
+                            return result;
+                        }
+                        if (dataTable.Columns.Count == 0)
+                        {
+                            foreach (string current in dictionary.Keys)
+                            {
+                                dataTable.Columns.Add(current, dictionary[current].GetType());
+                            }
+                        }
+                        DataRow dataRow = dataTable.NewRow();
+                        foreach (string current in dictionary.Keys)
+                        {
+                            dataRow[current] = dictionary[current];
+                        }
+
+                        dataTable.Rows.Add(dataRow); //循环添加行到DataTable中
+                    }
+                }
+            }
+            catch
+            {
+            }
+            result = dataTable;
+            return result;
+        }
+        #endregion
+
+        #region 转换为string字符串类型
+        /// <summary>
+        ///  转换为string字符串类型
+        /// </summary>
+        /// <param name="s">获取需要转换的值</param>
+        /// <param name="format">需要格式化的位数</param>
+        /// <returns>返回一个新的字符串</returns>
+        public static string ToStr(this object s, string format = "")
+        {
+            string result = "";
+            try
+            {
+                if (format == "")
+                {
+                    result = s.ToString();
+                }
+                else
+                {
+                    result = string.Format("{0:" + format + "}", s);
+                }
+            }
+            catch
+            {
+            }
+            return result;
+        }
+        #endregion
+
+        public static T DeserializeObject<T>(string obj)
+        {
+            return JsonConvert.DeserializeObject<T>(obj);
+        }
+    }
+}

@@ -1,0 +1,57 @@
+﻿<#@ template debug="false" hostspecific="True" language="C#" #>
+<#@include file="$(ProjectDir)\Manager.ttinclude"#>  
+<# var manager = Manager.Create(Host, GenerationEnvironment); #>  
+<#@ assembly name="System.Core" #>
+<#@ Assembly Name="$(ProjectDir)\bin\Debug\EntityFramework.dll" #>
+<#@ Assembly Name="$(ProjectDir)\bin\Debug\Template.dll" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Data.Entity" #>
+<#@ import namespace="System.Data" #>
+<#@ import namespace="System.Linq.Expressions" #>
+<#@ import namespace="GenCodeTemplate" #>
+<#@ output extension=".cs" #>
+
+<#  
+    string[] tbNames= {"sys_account","sys_menu"};//多表用，分割如a,b,c
+    string nspace=TempHelper.nspace+".Service";
+    string solutionsPath = Host.ResolveAssemblyReference("$(SolutionDir)");  
+    string projectPath = Host.ResolveAssemblyReference("$(ProjectDir)");  
+    foreach(var tbName in tbNames){
+        List<db_column> list = TempHelper.GetCloumn(tbName);
+        manager.StartNewFile( projectPath+@"Service\"+tbName+".cs");
+#>
+/*
+ * 说明：此文件来源于模板自动生成，有些可能需人工修改
+ *       如果重新生成可能会覆盖此文件需要注意 
+ *       有自定义的方法需加入请使用分布类partial来实现
+ * 描述:实体类 对应的实体为:<#= tbName#>
+ * Author:Ysy
+ * Date:<#=DateTime.Now.ToShortDateString() #>
+ * Source:T4模板
+ * Copyright：Ysy
+ */
+
+using DDD.DTO;
+using DDD.IRepository;
+using DDD.IService;
+using System.Linq;
+
+namespace <#=            nspace #>
+{
+	public class <#=            tbName #>Service : I<#=            tbName #>Service
+    {
+		private I<#=            tbName #>Repository _<#=            tbName #>Repository { get; set; }
+
+		public <#=            tbName #>Service( I<#=            tbName #>Repository I<#=            tbName #>Repository )
+		{
+			_<#=            tbName #>Repository = I<#=            tbName #>Repository;
+		}
+
+	}
+}
+
+<#    } #>
+<#  manager.EndBlock(); #> 
+<# manager.Process(true); #>  

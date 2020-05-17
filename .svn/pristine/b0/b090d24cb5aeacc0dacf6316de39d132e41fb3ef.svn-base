@@ -1,0 +1,89 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using DDD_core.Filters;
+using Microsoft.AspNetCore.Mvc;
+using MyUtility.Attribute;
+using MyUtility.Cache;
+using MyUtility.Config;
+
+namespace DDD_core.Controllers
+{
+    /// <summary>
+    /// 基本工具类
+    /// </summary>
+    [UserAuthorize]
+    public class BaseController : Controller
+    {
+        /// <summary>
+        /// 设置缓存方式,从配置文件中读取
+        /// </summary>
+        private string StorageModel { get; set; }
+        /// <summary>
+        /// 缓存帮助类
+        /// </summary>
+        private CacheHelpper _CacheHelpper { get; set; }
+        /// <summary>
+        /// 当前登录用户
+        /// </summary>
+        public string user { get { return GetUser() ?? ""; } private set { } }
+
+        public BaseController()
+        {
+            StorageModel = new Configs().GetConfigValue("StorageModel");
+            //简单工厂模式实现缓存帮助类
+            switch (StorageModel)
+            {
+                case "Cookie":
+                    _CacheHelpper = new CookieHelpper();
+                    break;
+                case "Session":
+                    _CacheHelpper = new SessionHellper();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// 设置缓存
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="minutes"></param>
+        public void SetCache(string key, string value, int minutes = 30)
+        {
+            _CacheHelpper._HttpContext = this.HttpContext;
+            _CacheHelpper.SetCache(key, value, minutes);
+        }
+        /// <summary>
+        /// 获取缓存
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public string GetCache(string key)
+        {
+            _CacheHelpper._HttpContext = this.HttpContext;
+            return _CacheHelpper.GetCache(key);
+        }
+        /// <summary>
+        /// 删除缓存
+        /// </summary>
+        /// <param name="key"></param>
+        public void DelCache(string key)
+        {
+            _CacheHelpper._HttpContext = this.HttpContext;
+            _CacheHelpper.DelCache(key);
+        }
+        /// <summary>
+        /// 获取当前用户
+        /// </summary>
+        /// <returns></returns>
+        private string GetUser()
+        {
+            _CacheHelpper._HttpContext = this.HttpContext;
+            return _CacheHelpper.GetUser();
+        }
+    }
+}

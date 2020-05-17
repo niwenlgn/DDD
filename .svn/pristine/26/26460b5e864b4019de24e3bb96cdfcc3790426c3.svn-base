@@ -1,0 +1,133 @@
+﻿
+@{
+    ViewData["Title"] = "格鲁伯考核页面";
+    Layout = null;
+}
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="~/css/gelubo.css" rel="stylesheet" />
+    <script src="~/js/jquery-easyui-1.4.5/jquery-1.8.0.min.js"></script>
+</head>
+
+
+
+<body>
+    <div id="gelubo">
+        <div class="container" style="height:400px">
+            <div class="login-box">
+                <div class="title" style="margin-top:20px">登录</div>
+                <div class="input" style="margin-top:60px">
+                    <input type="text"  id="login-user" placeholder="请输入你注册时的手机号码">
+                </div>
+                <div class="input" style="margin-top:60px">
+                    <input type="password"  id="login-password" placeholder="请输入你的密码">
+                </div>
+                <div class="btn login-btn" onclick="Login">
+                    <span>登录</span>
+                </div>
+                <div class="change-box login-change">
+                    <div class="change-btn toSign">
+                        <span>注册</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sign-box">
+                <div class="title" style="margin-top:20px">注册</div>
+                <div class="input" style="margin-top:10px">
+                    <input type="text" id="sign-name" placeholder="请输入用户名">
+                </div>
+                <div class="input">
+                    <input type="text" id="sign-user" placeholder="请输入你的电话号码">
+                </div>
+                <div class="input">
+                    <input type="password" id="sign-password" placeholder="请输入你的密码">
+                </div>
+                <div class="btn sign-btn" onclick="Sign">
+                    <span>注册</span>
+                </div>
+                <div class="change-box sign-change">
+                    <div class="change-btn toLogin">
+                        <span>去登陆</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="~/js/gelubo.js"></script>
+</body>
+
+
+<script>
+
+    // 登录注册页切换
+    (() => {
+        // 登录 -> 注册
+        let toSignBtn = getSelector(".toSign"), toLoginBtn = getSelector(".toLogin"),
+            SignBtn = getSelector(".sign-btn"), LoginBtn = getSelector(".login-btn"),
+        loginBox = getSelector(".login-box"),
+            signBox = getSelector(".sign-box");
+        toSignBtn.onclick = () => {
+            loginBox.className += ' animate_login';
+            signBox.className += ' animate_sign';
+        };
+        SignBtn.onclick = () => {
+            var phone = $("#sign-user").val();
+            var password = $("#sign-password").val();
+            var name = $("#sign-name").val();
+            var json = { phonenumber: phone, pwd: password, name: name };
+            var url = "http://www.globletech.net/Test/Register";
+            var data = GetJson(json);
+            $.ajax({
+                contentType: 'application/json',
+                type: 'POST',
+                url: url,
+                data: data,
+                success: function (res) {
+                    if (res.result) {
+                        alert("注册成功！");
+                    }
+                }
+            });
+        }
+        LoginBtn.onclick = () => {
+            var phone = $("#login-user").val();
+            var password = $("#login-password").val();
+            var json = { phonenumber: phone, pwd: password };
+            var data = GetJson(json);
+            var url = "http://www.globletech.net/Test/Login";
+            $.ajax({
+                contentType: 'application/json',
+                type: 'POST',
+                url: url,
+                data: data,
+                success: function (res) {
+                    if (res.result) {
+                        alert("登录成功！");
+                        var json = {
+                            name: res.name,
+                            token: res.token
+                        }
+                        SetCache(json);
+                        window.location = '@Url.Action("Tree")';
+                    }
+                }
+            });
+        }
+        toLoginBtn.onclick = () => {
+            loginBox.classList.remove("animate_login");
+            signBox.classList.remove("animate_sign");
+        };
+    })(window, document);
+
+    //设置缓存
+    function SetCache(json) {
+        $.post('@Url.Action("SetTokenAsync")', json);
+    }
+
+    function GetJson(json) {
+        
+        return JSON.stringify(json);
+    }
+</script>

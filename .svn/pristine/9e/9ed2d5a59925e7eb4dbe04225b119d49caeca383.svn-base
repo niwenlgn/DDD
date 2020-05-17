@@ -1,0 +1,22 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace MyUtility.Cache {
+    public class CacheFactory {
+		private static ICache _cache;
+		public static readonly object obj = new object();
+        public static ICache Cache() {
+			if (_cache == null) {
+				lock (obj) {
+					if (_cache == null) {
+						_cache = new MemoryCacheHelper();
+					}
+				}
+			}
+			return _cache;
+        }
+    }
+}

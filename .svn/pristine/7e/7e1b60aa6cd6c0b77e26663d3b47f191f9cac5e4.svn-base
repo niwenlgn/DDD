@@ -1,0 +1,11 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Warning"
+    }
+  },
+  "AllowedHosts": "*",
+  "sqlconnettingstring": "Server=114.215.80.33; Database=MyObject; User Id=sa; Password=ysy3292918;", //≈‰÷√ ˝æ›ø‚¡¥Ω”◊÷∑˚¥Æ
+  "StorageModel": "Session", //≈‰÷√ª∫¥Ê∑Ω Ω,
+  "RedisConnectionString": "192.168.8.20:6379,password=123456,connectTimeout=1000,connectRetry=1,syncTimeout=1000" //≈‰÷√Redis
+}

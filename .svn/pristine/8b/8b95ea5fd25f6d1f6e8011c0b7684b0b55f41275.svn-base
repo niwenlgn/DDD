@@ -1,0 +1,60 @@
+﻿using DDD.DTO;
+using DDD.IService;
+using DDD_core.Filters;
+using DDD_core.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using MyUtility;
+using MyUtility.Attribute;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace DDD_core.Controllers
+{
+    public class HomeController : BaseController
+    {
+
+        public Isys_menuService _sys_menu { get; set; }
+
+        public HomeController(Isys_menuService Isys_menuService)
+        {
+            _sys_menu = Isys_menuService;
+        }
+
+        #region 主页
+
+        [CheckAttribute(Pattern.不用验证)]
+        public IActionResult Index()
+        {
+            var menu = _sys_menu.GetSysMenu("7659");
+            ViewData["jsonmenu"] = menu.Success ? menu.Message : "";
+            ViewData["system_name"] = "干啥啥不行,吃啥啥没够";
+            ViewData["username"] = user;
+            return View();
+        }
+
+        #endregion
+
+        
+
+        #region 登录
+
+        public IActionResult Login(sys_accountDTO dto)
+        {
+            SetCache("userid", "7659");
+            return View();
+        }
+
+        public IActionResult RunLogin(sys_accountDTO dto)
+        {
+            var res = _sys_menu.VerifyPassword(dto);
+            if(res.Success) SetCache("userid", "7659");
+            return Json(res);
+        }
+
+        #endregion
+    }
+}

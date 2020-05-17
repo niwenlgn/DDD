@@ -1,0 +1,19 @@
+﻿using DDD.Entities;
+using MyUtility.Interface;
+using DDD.DTO;
+using DDD.DTO.gelubo;
+using System.Collections.Generic;
+
+namespace DDD.IRepository
+{
+    public interface Isys_menuRepository : IBaseRepository<sys_menu>, IDependency
+    {
+        /// <summary>
+        /// 获取JSON菜单树
+        /// </summary>
+        /// <returns></returns>
+        ResponseMessageDTO GetTree();
+
+        List<GeluboTreeJsonDTO> GetJsonTree(string path,string token);
+    }
+}

@@ -1,0 +1,41 @@
+using MyUtility;
+using Newtonsoft.Json;
+using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.IO;
+
+namespace Tests
+{
+    public class Tests
+    {
+        [SetUp]
+        public void Setup()
+        {
+        }
+
+        [Test]
+        public void Test1()
+        {
+            Assert.Pass();
+        }
+        [Test]
+        public void TestClient()
+        {
+            try
+            {
+                Dictionary<string, string> dic = new Dictionary<string, string>();
+                string odd = "YJ200117001";
+                string status = "10";
+                dic.Add("odd", odd);
+                dic.Add("status", status);
+                var json = dic.ToJson();
+                var s = MyUrlOp.Post("http://localhost:46801/api/DocAuditApi/UpdContractStatus", json);
+            }
+            catch (Exception e)
+            {
+            }
+        }
+        
+    }
+}

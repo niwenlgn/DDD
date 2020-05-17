@@ -1,0 +1,21 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>ErrorPage</title>
+</head>
+<body style="text-align:center; margin-left: auto; margin-right: auto;">
+        <img src="~/images/error.jpg" />
+        <h1>页面出错,3秒后跳转到备用备用网址访问！</h1>
+        <meta http-equiv="refresh" content="3;url=http://114.215.80.33:8066/GeLuBo/GeLuBoAPI/Index" />
+
+</body>
+</html>
+<script>    
+</script>

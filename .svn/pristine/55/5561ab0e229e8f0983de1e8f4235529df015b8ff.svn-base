@@ -1,0 +1,81 @@
+﻿using MyUtility.Config;
+using MyUtility.Cookie;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace MyUtility.WebInfo
+{
+    public class UserInfo
+    {
+        private static string StorageModel { get; set; }
+        public UserInfo()
+        {
+            StorageModel = new Configs().GetConfigValue("StorageModel");
+        }
+        /// <summary>
+        /// 获取当前用户
+        /// </summary>
+        /// <returns></returns>
+        public static string GetCurrentUser()
+        {
+            StorageModel = new Configs().GetConfigValue("StorageModel");//存储用户模式
+            if (StorageModel == "Cookie")
+            {
+                return (new MyCookie().GetCookies("userid"));
+            }
+            return "";
+            //else if (StorageModel == "Session")
+            //{
+            //    //return SessionHelper.GetSession("userid") == null ? null : SessionHelper.GetSession("userid").ToString();
+            //}
+            //else
+            //{
+            //    //return MySession.Session["userid"] == null ? null : MySession.Session["userid"].ToString();
+            //}
+        }
+
+        /// <summary>
+        /// 写入当前用户
+        /// </summary>
+        /// <param name="userid"></param>
+        public static void AddCurrentUser(string userid)
+        {
+            string StorageModel = new Configs().GetConfigValue("StorageModel");//存储用户模式
+            if (StorageModel == "Cookie")
+            {
+                new MyCookie().SetCookies("userid", userid, 30);
+            }
+            //else if (StorageModel == "Session")
+            //{
+            //    SessionHelper.WriteSession("userid", userid);
+            //}
+            //else
+            //{
+            //    MySession.Session["userid"] = userid;
+            //}
+        }
+
+        /// <summary>
+        /// 清除用户登录信息
+        /// </summary>
+        //public static void LogOut()
+        //{
+        //    string StorageModel = new Configs().GetConfigValue("StorageModel");//存储用户模式
+        //    if (StorageModel == "Cookie")
+        //    {
+        //        HttpCookie cookie = new HttpCookie("OAUSER");
+        //        cookie.Expires = DateTime.Now.AddDays(-1);
+        //        HttpContext.Current.Response.Cookies.Add(cookie);
+        //    }
+        //    else if (StorageModel == "Session")
+        //    {
+        //        SessionHelper.Abandon();
+        //    }
+        //    else
+        //    {
+        //        MySession.Abandon();
+        //    }
+        //}
+    }
+}

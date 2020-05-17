@@ -1,0 +1,17 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace MyUtility.Extend {
+	public static class ConvertExtend {
+		public static int ToInt(this int? i){
+			return i == null ? 0 : int.Parse(i.ToString());
+		}
+
+		public static DateTime ToDateTime(this DateTime? dt) {
+			return dt == null ? DateTime.Parse("1900-01-01") : DateTime.Parse(dt.ToString());
+		}
+	}
+}

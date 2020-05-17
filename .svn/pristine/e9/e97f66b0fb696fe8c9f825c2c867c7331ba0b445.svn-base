@@ -1,0 +1,43 @@
+﻿using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.AspNetCore.Mvc.Filters;
+using MyUtility.Attribute;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace DDD_core.Filters
+{
+    public class UserAuthorizeAttribute : Attribute, IAuthorizationFilter
+    {
+        public Pattern flag = Pattern.需要验证;
+
+        public void OnAuthorization(AuthorizationFilterContext context)
+        {
+            var controller = context.RouteData.Values["controller"].ToString();
+            var action = context.RouteData.Values["action"].ToString();
+            //获得对象的描述(取得控制器名及方法名)
+            var cad = (Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor)context.ActionDescriptor;
+            //获取方法上是否有标注过滤模式,如果有则更新过滤模式
+            var allowanyone = cad.MethodInfo.GetCustomAttributes(typeof(CheckAttribute), true).Any();
+            //获取控制器上特性,此语句在此过滤器中无用,记录下来以备后续学习
+            //|| cad.ControllerTypeInfo.GetCustomAttributes(typeof(IAllowAnonymous), true).Any()
+            if (allowanyone)
+            {
+                var t = cad.MethodInfo.GetCustomAttributes(typeof(CheckAttribute), true)[0] as CheckAttribute;
+                flag = t.flag;
+            }
+            switch (flag)//根据过滤模式选择相应的处理
+            {
+                case Pattern.需要验证:
+                    break;
+                case Pattern.不用验证:
+                    break;
+                default:
+                    break;
+            }
+
+        }
+
+    }
+}

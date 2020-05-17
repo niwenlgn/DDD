@@ -1,0 +1,127 @@
+﻿
+@{
+    ViewData["Title"] = "个人职责树";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<head>
+    <link href="~/css/gelubotree.css" rel="stylesheet" />
+</head>
+<body>
+    <div id="det">
+        <div class="block">
+            <el-tree :data="data"
+                     :props="defaultProps"
+                     :highlight-current="true"
+                     :expand-on-click-node="false"
+                     node-key="parentid"
+                     :default-expanded-keys="['1']">
+                <div class="custom-tree-node" slot-scope="{ node, data }">
+                    <span>{{ node.label }}</span>
+                    <span class="el-ic">
+                        <i class="el-icon-circle-plus-outline" @@click="add(data)" title="新增"></i>
+                        <i class="el-icon-sort" @@click="sort(data)" title="移动" ></i>
+                        <i class="el-icon-edit" @@click="update(data)" title="修改" ></i>
+                        <i class="el-icon-delete" @@click="remove(data)" title="删除该空间" v-if="data.parentid != null"></i>
+                    </span>
+                </div>
+            </el-tree>
+        </div>
+
+    </div>
+</body>
+<script>
+    var det = new Vue({
+        el: "#det",
+        data: {
+            data: [],
+            defaultProps: {
+                label: "name",
+                children: "children"
+            },
+            url : 'http://www.globletech.net/Test/GetDuties'
+        },
+        mounted: function () {
+            this.loadtree();
+        },
+        methods: {
+            loadtree() {
+                $.post('@Url.Action("GetJsonTree")', { "path": this._data.url }, function (data) {
+                    debugger
+                    det._data.data = data;
+                })
+            },
+            add(data) {
+                debugger
+                var url = "http://www.globletech.net/Test/AddDuty";
+                var json = { name: "测试", parentid: data.id, role: "测试" };
+                $.ajax({
+                    contentType: 'application/json',
+                    type: 'POST',
+                    data: JSON.stringify(json),
+                    url: url,
+                    beforeSend: function (request) {
+                        request.setRequestHeader("Authorization", '@ViewBag.token');
+                    },
+                    success: function (res) {
+                        debugger
+                        alert(res);
+                    }
+                });
+                console.log(data);
+            },
+            update(data) {
+                var url = "http://www.globletech.net/Test/EditDuty";
+                var json = { name: "", parentid: "", role: "" };
+                $.ajax({
+                    contentType: 'application/json',
+                    type: 'POST',
+                    url: url,
+                    data: JSON.stringify(json),
+                    beforeSend: function (request) {
+                        request.setRequestHeader("Authorization", '@ViewBag.token');
+                    },
+                    success: function (res) {
+
+                    }
+                });
+                console.log(data);
+            },
+            sort(data) {
+                var url = "http://www.globletech.net/Test/MoveDuty";
+                var json = { name: "", parentid: "", role: "" };
+                $.ajax({
+                    contentType: 'application/json',
+                    type: 'POST',
+                    url: url,
+                    data: JSON.stringify(json),
+                    beforeSend: function (request) {
+                        request.setRequestHeader("Authorization", '@ViewBag.token');
+                    },
+                    success: function (res) {
+
+                    }
+                });
+                console.log(data);
+            },
+            remove(node, data) {
+                var url = "http://www.globletech.net/Test/RemoveDuty";
+                var json = { name: "", parentid: "", role: "" };
+
+                $.ajax({
+                    contentType: 'application/json',
+                    type: 'POST',
+                    url: url,
+                    data: JSON.stringify(json),
+                    beforeSend: function (request) {
+                        request.setRequestHeader("Authorization", '@ViewBag.token');
+                    },
+                    success: function (res) {
+
+                    }
+                });
+                console.log(data);
+            }
+        }
+    })
+</script>
+

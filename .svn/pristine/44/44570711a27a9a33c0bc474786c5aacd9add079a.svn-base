@@ -1,0 +1,30 @@
+/*
+ * 说明：此文件来源于模板自动生成，有些可能需人工修改
+ *       如果重新生成可能会覆盖此文件需要注意 
+ *       有自定义的方法需加入请使用分布类partial来实现
+ * 描述:实体类 对应的实体为:flow_comment
+ * Author:Sammy
+ * Date:2020/3/5
+ * Source:T4模板
+ * Copyright：Sammy@飞翔
+ */
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;  
+
+namespace DDD.Entities {
+	[Table("flow_comment")]
+	public class flow_comment {
+        public int id{ get; set; }
+        public string doc_id{ get; set; }
+        public string comment{ get; set; }
+        public string status{ get; set; }
+        public string auditer{ get; set; }
+        public DateTime? auditdate{ get; set; }
+        public string agenter{ get; set; }
+ }
+}

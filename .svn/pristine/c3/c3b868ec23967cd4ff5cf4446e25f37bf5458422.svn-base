@@ -1,0 +1,156 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace DDD.IRepository
+{
+    public interface IBaseRepository<T>
+    where T : class
+    {
+        bool IsCommit { set; }//是否自动提交
+                              /// <summary>
+                              /// 获取所有实体对象,无跟踪状态
+                              /// </summary>
+        IQueryable<T> Entities { get; }
+        /// <summary>
+        /// 获取所有实体对象
+        /// </summary>
+        /// <param name="AsTrack">有无跟踪状态</param>
+        /// <returns></returns>
+        IQueryable<T> GetAll(bool AsTrack = false);
+
+        /// <summary>
+        /// 根据Lamda表达式来查询实体对象
+        /// </summary>
+        /// <param name="whereLambda"></param>
+        /// <param name="AsTrack">无跟踪查询 查询出来的结果无法直接修改</param>
+        /// <returns></returns>
+        IQueryable<T> Where(Expression<Func<T, bool>> whereLambda, bool AsTrack = false);
+
+        /// <summary>
+        /// 获取所有实体数量
+        /// </summary>
+        /// <returns></returns>
+        int Count();
+
+        /// <summary>
+        /// 根据表达式获取实体数量
+        /// </summary>
+        /// <param name="whereLambda"></param>
+        /// <returns></returns>
+        int Count(Expression<Func<T, bool>> whereLambda);
+
+        /// <summary>
+        /// 实体对象新增
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        int Add(T model);
+
+        /// <summary>
+        /// 实体对象修改
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        int Update(T model);
+
+        /// <summary>
+        /// 实体对象根据字段修改
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="proName"></param>
+        /// <returns></returns>
+        int Update(T model, params string[] proName);
+
+        /// <summary>
+        /// 实体对象删除
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        int Delete(T model);
+
+        /// <summary>
+        /// 删除复核条件的多个实体对象
+        /// </summary>
+        /// <param name="whereLambda"></param>
+        /// <returns></returns>
+        int Delete(Expression<Func<T, bool>> whereLambda);
+        /// <summary>
+        /// 根据键值查找返回单个实体 无跟踪查询
+        /// </summary>
+        /// <param name="keys"></param>
+        /// <returns></returns>
+        T Find(params object[] keys);
+        /// <summary>
+        /// 根据表达式查找返回单个实体
+        /// </summary>
+        /// <param name="whereLambda"></param>
+        /// <param name="AsTrack">无跟踪查询 查询出来的结果无法直接修改</param>
+        /// <returns></returns>
+        T Find(Expression<Func<T, bool>> whereLambda, bool AsTrack = false);
+
+        /// <summary>
+        /// 获取所有实体数量 异步方法
+        /// </summary>
+        /// <returns></returns>
+        Task<int> CountAsync();
+
+        /// <summary>
+        /// 根据表达式获取实体数量 异步方法
+        /// </summary>
+        /// <param name="whereLambda"></param>
+        /// <returns></returns>
+        Task<int> CountAsync(Expression<Func<T, bool>> whereLambda);
+
+        /// <summary>
+        /// 实体对象新增 异步方法
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        Task<int> AddAsync(T model);
+
+        /// <summary>
+        /// 实体对象修改 异步方法
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        Task<int> UpdateAsync(T model);
+
+        /// <summary>
+        /// 实体对象根据字段修改 异步方法
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="proName"></param>
+        /// <returns></returns>
+        Task<int> UpdateAsync(T model, params string[] proName);
+
+        /// <summary>
+        /// 实体对象删除 异步方法
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        Task<int> DeleteAsync(T model);
+
+        /// <summary>
+        /// 删除复核条件的多个实体对象 异步方法
+        /// </summary>
+        /// <param name="whereLambda"></param>
+        /// <returns></returns>
+        Task<int> DeleteAsync(Expression<Func<T, bool>> whereLambda);
+        /// <summary>
+        /// 根据键值查找返回单个实体 异步方法
+        /// </summary>
+        /// <param name="keys"></param>
+        /// <returns></returns>
+        Task<T> FindAsync(params object[] keys);
+        /// <summary>
+        /// 根据表达式查找返回单个实体 异步方法
+        /// </summary>
+        /// <param name="whereLambda"></param>
+        /// <returns></returns>
+        Task<T> FindAsync(Expression<Func<T, bool>> whereLambda);
+    }
+}

@@ -1,0 +1,17 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace DDD.DTO
+{
+    public class MenuDTO
+    {
+        public int id { set; get; }
+        public string parentId { set; get; }
+        public string name { set; get; }
+        public string title { set; get; }
+        public string icon { set; get; }
+        public string path { get; set; }
+        public string system { get; set; }
+    }
+}

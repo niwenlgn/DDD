@@ -1,0 +1,28 @@
+﻿using DDD.DTO;
+using DDD.IRepository;
+using DDD.IService;
+using System.Linq;
+
+namespace DDD.Service
+{
+    public class sys_menuService : Isys_menuService
+    {
+        private Isys_menuRepository _sys_menuRepository { get; set; }
+        private Isys_accountRepository _sys_account { get; set; }
+        public sys_menuService(Isys_menuRepository sysRepository, Isys_accountRepository Isys_accountRepository)
+        {
+            _sys_menuRepository = sysRepository;
+            _sys_account = Isys_accountRepository;
+        }
+        public ResponseMessageDTO GetSysMenu(string user)
+        {
+            return _sys_menuRepository.GetTree();
+        }
+
+        public ResponseMessageDTO VerifyPassword(sys_accountDTO dto)
+        {
+            var success = _sys_account.Where(c => c.account.Equals(dto.account) && c.password.Equals(dto.password)).Any();
+            return new ResponseMessageDTO() { Success = success, Message = success ? "登录成功":"用户名或密码错误！" };
+        }
+    }
+}

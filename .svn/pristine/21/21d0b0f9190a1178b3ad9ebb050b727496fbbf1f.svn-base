@@ -1,0 +1,85 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using StackExchange.Redis;
+using System.Configuration;
+
+namespace MyUtility.Redis {
+	public static class MyRedisHelper {
+		private static string connectionString = ConfigurationManager.AppSettings["redis"];
+		private static ConnectionMultiplexer _connInstance;
+		private static object locker = new object();
+
+		static MyRedisHelper() {
+			_connInstance = GetConnection();
+		}
+
+
+
+		/// <summary>
+		/// 单例方式获取ConnectionMultiplexer
+		/// </summary>
+		public static ConnectionMultiplexer connInstance {
+			get {
+				if (_connInstance == null) {
+					lock (locker) {
+						if (_connInstance == null || !_connInstance.IsConnected) {
+							_connInstance = GetConnection();
+						}
+					}
+				}
+				return _connInstance;
+			}
+		}
+
+		public static ConnectionMultiplexer GetConnection(string connStr = null) {
+			connStr = connStr ?? connectionString;
+			var connect = ConnectionMultiplexer.Connect(connStr);
+			//注册事件
+			connect.ConfigurationChanged += ConfigurationChanged;//配置更改时
+			connect.ConfigurationChangedBroadcast += ConfigurationChangedBroadcast;//通过发布订阅更新配置时
+			connect.ConnectionFailed += ConnectionFailed;//连接失败 ， 如果重新连接成功你将不会收到这个通知
+			connect.ConnectionRestored += ConnectionRestored; //重新建立连接之前的错
+			connect.ErrorMessage += ErrorMessage;//发生错误
+			connect.HashSlotMoved += HashSlotMoved;//更改集群
+			connect.InternalError += InternalError;//redis类库错误
+			return connect;
+		}
+
+		public static IDatabase GetDataBase() {
+			return _connInstance.GetDatabase();
+		}
+
+		#region 事件
+		private static void ConfigurationChanged(object sender, EndPointEventArgs e) {
+			Console.WriteLine(e.EndPoint);
+		}
+
+		private static void ConfigurationChangedBroadcast(object sender, EndPointEventArgs e) {
+			Console.WriteLine(e.EndPoint);
+		}
+
+		private static void ConnectionFailed(object sender, ConnectionFailedEventArgs e) {
+			Console.WriteLine(e.EndPoint + " " + e.ConnectionType + " " + e.Exception);
+		}
+
+		private static void ConnectionRestored(object sender, ConnectionFailedEventArgs e) {
+			Console.WriteLine(e.EndPoint + " " + e.ConnectionType + " " + e.Exception);
+		}
+
+		private static void ErrorMessage(object sender, RedisErrorEventArgs e) {
+			Console.WriteLine(e.EndPoint + " " + e.Message);
+		}
+
+		private static void HashSlotMoved(object sender, HashSlotMovedEventArgs e) {
+			Console.WriteLine(e.HashSlot + " " + e.OldEndPoint + " " + e.NewEndPoint);
+		}
+
+		private static void InternalError(object sender, InternalErrorEventArgs e) {
+			Console.WriteLine(e.Origin + " " + e.ConnectionType + " " + e.EndPoint + " " + e.Exception);
+		}
+		#endregion
+	}
+}

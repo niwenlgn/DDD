@@ -1,0 +1,18 @@
+﻿
+// 封装选择器, 采用ES6箭头函数写法
+const getSelector = ele => {
+    return typeof ele === "string" ? document.querySelector(ele) : "";
+}
+
+
+// 登录注册载入
+
+const containerShow = () => {
+    var show = getSelector(".container")
+    show.className += " container-show"
+}
+
+
+window.onload = containerShow;
+
+

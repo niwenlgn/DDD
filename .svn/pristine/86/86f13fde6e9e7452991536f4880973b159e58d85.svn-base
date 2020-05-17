@@ -1,0 +1,39 @@
+﻿using MyUtility.Interface;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace DDD.IRepository
+{
+    public interface IUnitOfWork : IDependency
+    {
+        /// <summary>
+        /// 修改信息提交
+        /// </summary>
+        /// <param name="validatonSave"></param>
+        /// <returns></returns>
+        int SaveChanges();
+        /// <summary>
+        /// 修改信息提交 异步方法
+        /// </summary>
+        /// <param name="validatonSave"></param>
+        /// <returns></returns>
+        //Task<int> SaveChangesAsync(bool validatonSave = true);
+        /// <summary>
+        /// 开启事务模式
+        /// </summary>
+        void BeginTransaction();
+        /// <summary>
+        /// 修改信息提交
+        /// </summary>
+        /// <param name="validatonSave"></param>
+        /// <returns></returns>
+		int Commit();
+        /// <summary>
+        /// 修改信息回滚
+        /// </summary>
+        /// <returns></returns>
+        int RollBack();
+        void Dispose();
+    }
+}

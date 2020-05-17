@@ -1,0 +1,84 @@
+﻿.tree_w {
+    padding: 20px 30px
+}
+
+
+.custom-tree-node {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    padding-right: 8px;
+    color: #4386c6;
+}
+
+.el-ic {
+    display: none;
+}
+
+span {
+    padding: 0 14px;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.svg-icon {
+    color: #4386c6;
+}
+
+
+.el-tree-node__content {
+    height: 38px;
+}
+
+.el-tree-node__expand-icon {
+    color: #428bca;
+    /*padding: 10px 10px 0px 10px !important;*/
+}
+
+.el-tree-node__content:hover .el-ic {
+    color: #428bca !important;
+    display: inline-block;
+}
+
+.el-tree-node__content:hover {
+    font-weight: bold;
+}
+
+.el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content :hover.el-tree-node__expand-icon.is-leaf {
+    color: transparent;
+    cursor: default;
+}
+/*background-color: #3998d9;*/
+.el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content :hover.custom-tree-node {
+    font-weight: bold;
+}
+
+.el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content :hover.el-tree-node__expand-icon {
+    font-weight: bold;
+}
+
+
+.el-dialog__body .upload-container .image-preview .image-preview-wrapper img {
+    height: 100px;
+}
+
+.el-dialog .el-collapse-item__wrap {
+    padding-top: 0px;
+}
+
+.spatial_img.el-collapse-item__wrap {
+    margin-bottom: 0;
+    padding-top: 0px;
+}
+
+
+.upload-container .image-preview .image-preview-wrapper {
+    width: 120px;
+}
+
+.upload-container .image-preview .image-preview-action {
+    line-height: 100px;
+    height: 100px;
+}

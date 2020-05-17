@@ -1,0 +1,33 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Mvc;
+
+namespace MyUtility.Extend 
+{
+    public static class ModeMessageExtend
+    {
+        /// <summary>
+        /// 取得Model的验证错误信息
+        /// </summary>
+        /// <param name="control"></param>
+        /// <returns></returns>
+        public static string GetErrMessage(this Controller control)
+        {
+            string smsg = "";
+            foreach (var key in control.ModelState.Keys)
+            {
+                var errors = control.ModelState[key].Errors;
+                if (errors.Count() > 0)
+                {
+                    smsg = errors[0].ErrorMessage;
+                    break;
+                }
+            }
+            return smsg;
+        }
+    }
+}

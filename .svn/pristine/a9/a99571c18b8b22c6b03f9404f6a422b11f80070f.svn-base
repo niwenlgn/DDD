@@ -1,0 +1,22 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using DDD.DTO;
+using DDD_core.Controllers;
+using Microsoft.AspNetCore.Mvc;
+
+namespace DDD_core.Areas.GeLuBo.Controllers
+{
+    public class GeLuBoAPIController : BaseController
+    {
+        public IActionResult Index() => View();
+
+        public async Task SetTokenAsync(sys_accountDTO dto) {
+            this.SetCache("userid", dto.account);
+        }
+
+        public IActionResult Tree() => View();
+
+    }
+}

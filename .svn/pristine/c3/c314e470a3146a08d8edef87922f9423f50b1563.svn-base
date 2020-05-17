@@ -1,0 +1,19 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace MyUtility.AttributeExtend {
+	public class EnableTranscationAttribute : Attribute {
+		private string _type;
+		public object _returnValue;
+		/// <summary>
+		/// 处理事务特性，默认EF的SaveChange方式，加上此特性系统会自动开启事务
+		/// </summary>
+		/// <param name="returnValue">设置执行失败返回值类型，默认执行失败返回0,可以设置返回字符，如果"$-内容"则返回MessageDto格式的对象</param>
+		public EnableTranscationAttribute(object returnValue = null) {
+			_returnValue = returnValue == null ? 0 : returnValue;
+		}
+	}
+}

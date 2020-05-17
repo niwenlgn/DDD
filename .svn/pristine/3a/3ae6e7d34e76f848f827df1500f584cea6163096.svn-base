@@ -1,0 +1,58 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Web;
+
+namespace MyUtility {
+    public class SessionHelper {
+        /// <summary>
+        /// 写Session
+        /// </summary>
+        /// <typeparam name="T">Session值类型</typeparam>
+        /// <param name="key">Session键</param>
+        /// <param name="value">Session值</param>
+        public static void WriteSession<T>(string key,T value) {
+            if (string.IsNullOrEmpty(key))
+                return;
+            HttpContext.Current.Session[key] = value;
+        }
+
+        /// <summary>
+        /// 写Session
+        /// </summary>
+        /// <param name="key">Session键</param>
+        /// <param name="value">Session值</param>
+        public static void WriteSession(string key,string value) {
+            WriteSession<string>(key, value);
+        }
+
+        /// <summary>
+        /// 获取Session中Key的值
+        /// </summary>
+        /// <param name="key">Session键</param>
+        /// <returns></returns>
+        public static string GetSession(string key) {
+            var sessionValue = HttpContext.Current.Session[key];
+            return sessionValue == null ? null : sessionValue.ToString();
+        }
+
+        /// <summary>
+        /// 清除指定Session中Key的值
+        /// </summary>
+        /// <param name="key">Session键</param>
+        public static void RemoveSession(string key) {
+            if (string.IsNullOrEmpty(key))
+                return;
+            HttpContext.Current.Session.Contents.Remove(key);
+        }
+
+        /// <summary>
+        /// 删除当前Session
+        /// </summary>
+        public static void Abandon() {
+            HttpContext.Current.Session.Abandon();
+        }
+    }
+}

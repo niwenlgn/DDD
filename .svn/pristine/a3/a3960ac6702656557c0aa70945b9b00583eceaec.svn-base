@@ -1,0 +1,32 @@
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using MyUtility.Config;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace DDD_core.CacheHelpper
+{
+    public abstract class CacheHelpper : Controller
+    {
+        public HttpContext _HttpContext { get; set; }
+        /// <summary>
+        /// 设置缓存
+        /// </summary>
+        public abstract void SetCache(string key, string value, int minutes = 30);
+        /// <summary>
+        /// 获取缓存
+        /// </summary>
+        public abstract string GetCache(string key);
+        /// <summary>
+        /// 删除缓存
+        /// </summary>
+        public abstract void DelCache(string key);
+        /// <summary>
+        /// 获取当前登录人
+        /// </summary>
+        public abstract string GetUser();
+    }
+
+}

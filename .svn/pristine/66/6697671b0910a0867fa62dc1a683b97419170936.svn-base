@@ -1,0 +1,17 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace MyUtility.Verify
+{
+    /// <summary>
+    /// 权限验证相关的方法
+    /// </summary>
+    public class Jurisdiction
+    {
+        public void GetRole()
+        {
+
+        }
+    }
+}

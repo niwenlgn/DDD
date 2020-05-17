@@ -1,0 +1,72 @@
+﻿<#@ template debug="false" hostspecific="True" language="C#" #>
+<#@include file="$(ProjectDir)\Manager.ttinclude"#>  
+<# var manager = Manager.Create(Host, GenerationEnvironment); #>  
+<#@ assembly name="System.Core" #>
+<#@ Assembly Name="$(ProjectDir)\bin\Debug\EntityFramework.dll" #>
+<#@ Assembly Name="$(ProjectDir)\bin\Debug\Template.dll" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Data.Entity" #>
+<#@ import namespace="System.Data" #>
+<#@ import namespace="System.Linq.Expressions" #>
+<#@ import namespace="GenCodeTemplate" #>
+<#@ output extension=".cs" #>
+
+<#  
+    string[] tbNames= {  "sys_button","sys_role","sys_power","sys_icon" };//多表用，分割如a,b,c
+    string nspace=TempHelper.nspace+".Entities";
+    string solutionsPath = Host.ResolveAssemblyReference("$(SolutionDir)");  
+    string projectPath = Host.ResolveAssemblyReference("$(ProjectDir)");  
+    foreach(var tbName in tbNames){
+        List<db_column> list = TempHelper.GetCloumn(tbName);
+        manager.StartNewFile( projectPath+@"Entities\"+tbName+".cs");
+#>
+/*
+ * 说明：此文件来源于模板自动生成，有些可能需人工修改
+ *       如果重新生成可能会覆盖此文件需要注意 
+ *       有自定义的方法需加入请使用分布类partial来实现
+ * 描述:实体类 对应的实体为:<#= tbName#>
+ * Author:Ysy
+ * Date:<#=DateTime.Now.ToShortDateString() #>
+ * Source:T4模板
+ * Copyright：Ysy
+ */
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;  
+
+namespace <#=            nspace #> {
+	[Table("<#=            tbName #>")]
+	public class <#=            tbName #> {
+<#        foreach(var item in list){ #>
+<#            if  (item.data_type=="varchar" || item.data_type=="nvarchar" || item.data_type=="text") {#>
+        public string <#=                    item.column_name #>{ get; set; }
+<#            } #>
+<#            if  (item.data_type=="datetime") {#>
+        public DateTime? <#=                    item.column_name #>{ get; set; }
+<#            } #>
+<#            if  (item.data_type=="int"|| item.data_type=="smallint" || item.data_type=="bigint") {#>
+        public int <#=                    item.column_name #>{ get; set; }
+<#            } #>
+<#            if  (item.data_type=="decimal") {#>
+        public decimal? <#=                    item.column_name #>{ get; set; }
+<#            } #>
+<#            if  (item.data_type=="smallmoney") {#>
+        public decimal? <#=                    item.column_name #>{ get; set; }
+<#            } #>
+<#            if  (item.data_type=="bit") {#>
+        public bool? <#=                    item.column_name #>{ get; set; }
+<#            } #>
+<#  
+        }
+ #>
+ }
+}
+<#    } #>
+<#  manager.EndBlock(); #> 
+<# manager.Process(true); #>  

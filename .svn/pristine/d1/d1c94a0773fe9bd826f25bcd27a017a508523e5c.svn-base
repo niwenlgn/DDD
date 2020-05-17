@@ -1,0 +1,140 @@
+﻿
+@{
+    ViewData["Title"] = "格鲁伯考核";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<head>
+
+    <style>
+        .logintagle {
+            margin: auto;
+            text-align: center;
+            filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#3f000000',endColorstr='#3f000000');
+            background-color: rgba(255, 255, 255, 0.3);
+            background-color: #E1FFFF;
+        }
+
+        .loginbody {
+            width: 100%;
+            height: 100vh; /* 重点一 */
+            background-repeat: no-repeat;
+            background-size: cover; /* 重点二 */
+            animation: frams 13s infinite;
+            overflow: auto;
+            position: absolute;
+            width: 500px;
+            height: 300px;
+            margin: auto;
+            top: -15%;
+            left: 0;
+            bottom: 0;
+            right: 0;
+        }
+
+
+        .logintr {
+            width: 180px;
+            height: 50px;
+            margin: auto;
+            text-align: center;
+        }
+
+
+
+        .loginlabel {
+            font-weight: bolder;
+            text-align: left;
+            width: 30px;
+            padding: 20px;
+        }
+    </style>
+</head>
+
+
+<body class="loginbody">
+
+    <table id="logintable" class="logintagle" style="width:400px;height:280px;text-align:center;">
+
+
+        <tr style="height:30px"></tr>
+
+
+        <tr class="logintr">
+            <td>
+                <label class="loginlabel">名称: </label>
+                <el-input typeof="text" style="width: 240px;margin: 20px;" v-model="name" placeholder="请输入名称"></el-input>
+            </td>
+        </tr>
+        <tr class="logintr">
+            <td>
+                <label class="loginlabel">角色: </label>
+                <el-input typeof="text" style="width: 240px;margin: 20px;" v-model="role" placeholder="请输入角色"></el-input>
+            </td>
+        </tr>
+
+        <tr style="height:30px;width:100px;text-align:center;" rowspan="10">
+            <td style="text-align:center;width:90px">
+                <el-button id="submit" style="width: 110px;font-size: 17px;margin: 20px;" @@click="submit" round>确定</el-button>
+            </td>
+        </tr>
+    </table>
+</body>
+<script>
+
+     var app = new Vue({
+        el: "#logintable",
+        data: {
+            name: '',
+            role: '',
+            id: '@ViewBag.id',
+            parentid: '@ViewBag.parentid'
+        },
+        methods: {
+            submit: function () {
+                var CURDtype = '@ViewBag.CURDtype';
+                var path = "";
+                var obj = [];
+                if (CURDtype == "xz") {
+                    CURDtype = "新增";
+                    path = "http://www.globletech.net/Test/AddDuty";
+                    obj.push({
+                        name: this._data.name,
+                        parentid: this._data.parentid,
+                        role: this._data.role
+                    });
+                }
+                else if (CURDtype == "xg") {
+                    CURDtype = "修改";
+                    path = "http://www.globletech.net/Test/EditDuty";
+                    obj.push({
+                        name: this._data.name,
+                        id: this._data.id,
+                        role: this._data.role
+                    });
+                }
+                else {
+                    $.alert('操作失败！', 3,function () {
+                        window.location = "@Url.Action("Tree")";
+                    })
+                }
+                var json = JSON.stringify(obj[0]);
+                 $.ajax({
+                    contentType: 'application/json',
+                    type: 'POST',
+                     url: path,
+                     data: json,
+                    beforeSend: function (request) {
+                        request.setRequestHeader("Authorization", '@ViewBag.token');
+                    },
+                    success: function (res) {
+                        if (res.result) {
+                            alert(CURDtype + "成功！");
+                            window.location = './Tree';
+                        }
+                    }
+                });
+            }
+        }
+    })
+
+</script>

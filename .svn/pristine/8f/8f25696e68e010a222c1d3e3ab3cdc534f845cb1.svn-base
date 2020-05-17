@@ -1,0 +1,31 @@
+/*
+ * 说明：此文件来源于模板自动生成，有些可能需人工修改
+ *       如果重新生成可能会覆盖此文件需要注意 
+ *       有自定义的方法需加入请使用分布类partial来实现
+ * 描述:实体类 对应的实体为:sys_role
+ * Author:Ysy
+ * Date:2020/3/20
+ * Source:T4模板
+ * Copyright：Ysy
+ */
+
+using DDD.Entities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System;
+using System.Collections.Generic;
+using System.Data.Entity.ModelConfiguration;
+using System.Text;
+
+namespace DDD.Data.MapConfig
+{
+    public class sys_roleMap : IEntityTypeConfiguration<sys_role>
+    {
+       public void Configure(EntityTypeBuilder<sys_role> builder)
+        {
+            builder.ToTable("sys_role", "db_admin")
+                .HasKey(c=>c.roleid);
+        }
+    }
+}
+

@@ -1,0 +1,10 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Warning"
+    }
+  },
+  "AllowedHosts": "*",
+  "sqlconnettingstring": "Server=114.215.80.33; Database=MyObject; User Id=sa; Password=ysy3292918;",//配置数据库链接字符串
+  "StorageModel": "Cookie"//配置缓存方式
+}

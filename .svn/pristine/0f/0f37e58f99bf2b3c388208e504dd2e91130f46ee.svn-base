@@ -1,0 +1,143 @@
+﻿/**********************************************************************
+ * 文件名：        MyJsonEtreegrid.cs
+ * 描述：          EasyUi TreeGrid的json数据格式的生成类
+ * 作者:           Sammy
+ * 日期:           2016-10-05
+ * 说明：          通过DataTable生成EasyUi TreeGrid所需的Json格式
+**********************************************************************/
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Data;
+using System.Text;
+
+/// <summary>
+/// EasyuiTreeGrid 的摘要说明
+/// </summary>
+namespace MyUtility
+{
+
+    public class MyJsonEtreegrid
+    {
+         #region 根据DataTable生成EasyUI Tree Json树结构
+        StringBuilder result = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
+        /// <summary>
+        /// 根据DataTable生成EasyUI Tree Json树结构
+        /// </summary>
+        /// <param name="tabel">数据源</param>
+        /// <param name="idCol">ID列</param>
+        /// <param name="txtCol">Text列</param>
+        /// <param name="url">节点Url</param>
+        /// <param name="rela">关系字段</param>
+        /// <param name="pId">父ID</param>
+        /// <param name="sfiled">预留字段可以设置需要在TreeGrid上显示的字段,数量最多为6个</param>
+        public string GetTreeJsonByTable(DataTable tabel, string idCol, string txtCol, string url, string rela, object pId, string[] sfiled)
+        {
+            result.Append(sb.ToString());
+            //sb.Clear();
+            sb.Remove(0, sb.Length);
+            if (tabel.Rows.Count > 0)
+            {
+                sb.Append("[");
+                string filer = string.Format("{0}='{1}'", rela, pId);
+                DataRow[] rows = tabel.Select(filer);
+                if (rows.Length > 0)
+                {
+                    foreach (DataRow row in rows)
+                    {
+                        //sb.Append("{\""+ idCol+ "\":\"" + row[idCol] + "\",\"" + txtCol + "\":\"" + row[txtCol] + "\",\"" + url + "\":\"" + row[url] + "\",\"" + rela + "\":\"" + row[rela] + "\",\"" + sfiled[0] + "\":\"" + row[sfiled[0]] + "\",\"" + sfiled[1] + "\":\"" + row[sfiled[1]] + "\",\"" + sfiled[2] + "\":\"" + row[sfiled[2]] + "\",\"" + sfiled[3] + "\":\"" + row[sfiled[3]] + "\",\"" + sfiled[4] + "\":\"" + row[sfiled[4]] + "\",\"" + sfiled[5] + "\":\"" + row[sfiled[5]]);// + "\",\"state\":\"open\"");
+                        sb.Append("{\"" + idCol + "\":\"" + row[idCol] + "\",\"" + txtCol + "\":\"" + row[txtCol] + "\",\"" + url + "\":\"" + row[url] + "\",\"" + rela + "\":\"" + row[rela]);// + "\",\"state\":\"open\"");
+                        foreach (string filed in sfiled)
+                        {
+                            sb.Append("\",\"" + filed + "\":\"" + row[filed]);
+                        }
+                        if (tabel.Select(string.Format("{0}='{1}'", rela, row[idCol])).Length > 0)
+                        {
+                            sb.Append("\",\"state\":\"open\"");
+                            sb.Append(",\"children\":");
+                            GetTreeJsonByTable(tabel, idCol, txtCol, url, rela, row[idCol], sfiled);
+                            result.Append(sb.ToString());
+                            //sb.Clear();
+                            sb.Remove(0, sb.Length);
+                        }
+                        else
+                        {
+                            sb.Append("\",\"state\":\"open\"");
+                        }
+                        result.Append(sb.ToString());
+                        //sb.Clear();
+                        sb.Remove(0, sb.Length);
+                        sb.Append("},");
+                    }
+                    sb = sb.Remove(sb.Length - 1, 1);
+                }
+                sb.Append("]");
+                result.Append(sb.ToString());
+                //sb.Clear();
+                sb.Remove(0, sb.Length);
+            }
+            return result.ToString();
+        }
+
+        /// <summary>
+        /// 根据DataTable生成EasyUI Tree Json树结构
+        /// </summary>
+        /// <param name="tabel">数据源</param>
+        /// <param name="idCol">ID列</param>
+        /// <param name="txtCol">Text列</param>
+        /// <param name="url">节点Url</param>
+        /// <param name="rela">关系字段</param>
+        /// <param name="pId">父ID</param>
+        /// <param name="sfiled">预留字段可以设置需要在TreeGrid上显示的字段,数量最多为6个</param>
+        public string GetTreeJsonByTable(DataTable tabel, string idCol, string txtCol, string url, string rela, object pId, string[] sfiled,string state)
+        {
+            result.Append(sb.ToString());
+            //sb.Clear();
+            sb.Remove(0, sb.Length);
+            if (tabel.Rows.Count > 0)
+            {
+                sb.Append("[");
+                string filer = string.Format("{0}='{1}'", rela, pId);
+                DataRow[] rows = tabel.Select(filer);
+                if (rows.Length > 0)
+                {
+                    foreach (DataRow row in rows)
+                    {
+                        //sb.Append("{\""+ idCol+ "\":\"" + row[idCol] + "\",\"" + txtCol + "\":\"" + row[txtCol] + "\",\"" + url + "\":\"" + row[url] + "\",\"" + rela + "\":\"" + row[rela] + "\",\"" + sfiled[0] + "\":\"" + row[sfiled[0]] + "\",\"" + sfiled[1] + "\":\"" + row[sfiled[1]] + "\",\"" + sfiled[2] + "\":\"" + row[sfiled[2]] + "\",\"" + sfiled[3] + "\":\"" + row[sfiled[3]] + "\",\"" + sfiled[4] + "\":\"" + row[sfiled[4]] + "\",\"" + sfiled[5] + "\":\"" + row[sfiled[5]]);// + "\",\"state\":\"open\"");
+                        sb.Append("{\"" + idCol + "\":\"" + row[idCol] + "\",\"" + txtCol + "\":\"" + row[txtCol] + "\",\"" + url + "\":\"" + row[url] + "\",\"" + rela + "\":\"" + row[rela]);// + "\",\"state\":\"open\"");
+                        foreach (string filed in sfiled)
+                        {
+                            sb.Append("\",\"" + filed + "\":\"" + row[filed]);
+                        }
+                        if (tabel.Select(string.Format("{0}='{1}'", rela, row[idCol])).Length > 0)
+                        {
+                            sb.Append("\",\"state\":\""+state+"\"");
+                            sb.Append(",\"children\":");
+                            GetTreeJsonByTable(tabel, idCol, txtCol, url, rela, row[idCol], sfiled, state);
+                            result.Append(sb.ToString());
+                            //sb.Clear();
+                            sb.Remove(0, sb.Length);
+                        }
+                        else
+                        {
+                            sb.Append("\",\"state\":\"open\"");
+                        }
+                        result.Append(sb.ToString());
+                        //sb.Clear();
+                        sb.Remove(0, sb.Length);
+                        sb.Append("},");
+                    }
+                    sb = sb.Remove(sb.Length - 1, 1);
+                }
+                sb.Append("]");
+                result.Append(sb.ToString());
+                //sb.Clear();
+                sb.Remove(0, sb.Length);
+            }
+            return result.ToString();
+        }
+         #endregion
+    }
+}

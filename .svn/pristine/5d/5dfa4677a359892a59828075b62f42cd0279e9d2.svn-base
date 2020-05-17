@@ -1,0 +1,157 @@
+﻿/**********************************************************************
+ * 文件名：        SqlHelper.cs
+ * 描述：          SqlServer数据库操作类
+ * 作者:           Sammy
+ * 日期:           2016-09-09
+ * 说明：          需要在webconfig文件中配置SqlConnection连接字符串
+**********************************************************************/
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Data.Sql;
+using System.Data.SqlClient;
+using System.Data;
+using System.Configuration;
+using System.Collections;
+using System.Web;
+
+namespace GenCodeTemplate
+{
+    public class TempHelper
+    {
+        //数据库连接字符串(web.config来配置)
+        public static string connStr;
+        public static string nspace = "DDD";
+
+        public static string GetConnection()
+        {
+            return "Server=114.215.80.33;Database=MyObject;uid=sa;pwd=Ysy3292918;";
+        }
+
+
+        /// <summary>
+        /// 执行SQL语句返回DS
+        /// </summary>
+        /// <param name="cmdText">SQL语句</param>
+        /// <returns>DS</returns>
+        public static DataSet ExecuteQuery(string cmdText)
+        {
+            connStr = GetConnection();
+            using (SqlConnection conn = new SqlConnection(connStr))
+            {
+                DataSet ds = new DataSet();
+                try
+                {
+                    conn.Open();
+                    SqlDataAdapter da = new SqlDataAdapter(cmdText, conn);
+                    da.Fill(ds, "ds");
+                }
+                catch (System.Data.SqlClient.SqlException e)
+                {
+                    //conn.Close();
+                    throw new Exception(e.Message);
+                }
+                finally
+                {
+                    //conn.Dispose();
+                    //conn.Close();
+                }
+                return ds;
+            }
+        }
+
+        public static string FilterSql(string source)
+        {
+            //单引号替换成两个单引号
+            source = source.Replace("'", "''");
+            source = source.Replace("\"", "“");
+            source = source.Replace("|", "｜");
+            //半角封号替换为全角封号，防止多语句执行
+            source = source.Replace(";", "；");
+
+            //半角括号替换为全角括号
+            source = source.Replace("(", "（");
+            source = source.Replace(")", "）");
+
+            /**/
+            ///////////////要用正则表达式替换，防止字母大小写得情况////////////////////
+
+            //去除执行存储过程的命令关键字
+            source = source.Replace("Exec", "");
+            source = source.Replace("Execute", "");
+
+            //去除系统存储过程或扩展存储过程关键字
+            source = source.Replace("xp_", "x p_");
+            source = source.Replace("sp_", "s p_");
+
+            //防止16进制注入
+            source = source.Replace("0x", "0 x");
+
+            return source;
+
+        }
+
+
+        public static List<db_column> GetCloumn(string tbName)
+        {
+            StringBuilder sb = new StringBuilder();
+            //sb.Append("select * from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME ='" + tbName + "'");
+            //sb.Append("select b.ORDINAL_POSITION,a.* from INFORMATION_SCHEMA.COLUMNS a left join INFORMATION_SCHEMA.KEY_COLUMN_USAGE b on a.TABLE_NAME = b.TABLE_NAME and a.COLUMN_NAME = b.COLUMN_NAME where a.TABLE_NAME = '" + tbName + "'");
+            sb.Append("select a.CHARACTER_MAXIMUM_LENGTH,a.NUMERIC_PRECISION,a.NUMERIC_PRECISION_RADIX,a.NUMERIC_SCALE,a.TABLE_NAME,a.COLUMN_NAME,a.ORDINAL_POSITION,a.DATA_TYPE,b.ORDINAL_POSITION from INFORMATION_SCHEMA.COLUMNS a left join INFORMATION_SCHEMA.KEY_COLUMN_USAGE b on a.TABLE_NAME = b.TABLE_NAME and a.COLUMN_NAME = b.COLUMN_NAME where a.TABLE_NAME = '" + tbName + "'");
+            DataSet ds = ExecuteQuery(sb.ToString());
+            List<db_column> list = new List<db_column>();
+            if (ds.Tables[0].Rows.Count > 0)
+            {
+                for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
+                {
+                    int? character_maximum_length, numeric_precision, numeric_precision_radix, numeric_scale;
+                    if (string.IsNullOrEmpty(ds.Tables[0].Rows[i]["CHARACTER_MAXIMUM_LENGTH"].ToString()))
+                    {
+                        character_maximum_length = null;
+                    }
+                    else
+                    {
+                        character_maximum_length = int.Parse(ds.Tables[0].Rows[i]["CHARACTER_MAXIMUM_LENGTH"].ToString());
+                    }
+                    if (string.IsNullOrEmpty(ds.Tables[0].Rows[i]["NUMERIC_PRECISION"].ToString()))
+                    {
+                        numeric_precision = null;
+                    }
+                    else
+                    {
+                        numeric_precision = int.Parse(ds.Tables[0].Rows[i]["NUMERIC_PRECISION"].ToString());
+                    }
+                    if (string.IsNullOrEmpty(ds.Tables[0].Rows[i]["NUMERIC_PRECISION_RADIX"].ToString()))
+                    {
+                        numeric_precision_radix = null;
+                    }
+                    else
+                    {
+                        numeric_precision_radix = int.Parse(ds.Tables[0].Rows[i]["NUMERIC_PRECISION_RADIX"].ToString());
+                    }
+                    if (string.IsNullOrEmpty(ds.Tables[0].Rows[i]["NUMERIC_SCALE"].ToString()))
+                    {
+                        numeric_scale = null;
+                    }
+                    else
+                    {
+                        numeric_scale = int.Parse(ds.Tables[0].Rows[i]["NUMERIC_SCALE"].ToString());
+                    }
+                    db_column model = new db_column()
+                    {
+                        table_name = ds.Tables[0].Rows[i]["TABLE_NAME"].ToString(),
+                        column_name = ds.Tables[0].Rows[i]["COLUMN_NAME"].ToString(),
+                        ordinal_position = int.Parse(ds.Tables[0].Rows[i]["ORDINAL_POSITION"].ToString()),
+                        data_type = ds.Tables[0].Rows[i]["DATA_TYPE"].ToString(),
+                        character_maximum_length = character_maximum_length,
+                        numeric_precision = numeric_precision,
+                        numeric_precision_radix = numeric_precision_radix,
+                        numeric_scale = numeric_scale,
+                    };
+                    list.Add(model);
+                }
+            }
+            return list;
+        }
+    }
+}

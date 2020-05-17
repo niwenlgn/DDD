@@ -1,0 +1,23 @@
+/*
+ * 说明：此文件来源于模板自动生成，有些可能需人工修改
+ *       如果重新生成可能会覆盖此文件需要注意 
+ *       有自定义的方法需加入请使用分布类partial来实现
+ * 描述:实体类 对应的实体为:sys_icon
+ * Author:Ysy
+ * Date:2020/3/18
+ * Source:T4模板
+ * Copyright：Ysy
+ */
+
+using DDD.DTO;
+using MyUtility.Interface;
+using System.Threading.Tasks;
+
+namespace DDD.IService
+{
+	public interface Isys_iconService : IDependency
+    {
+
+	}
+}
+
